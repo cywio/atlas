@@ -8,12 +8,22 @@ generator client {
 }
 
 model accounts {
-  id                    String                  @id @default(cuid())
-  name                  String?
-  email                 String                  @unique
-  password              String
-  avatar                String?
-  admin                 Boolean                 @default(false)
-  created               DateTime                @default(now())
-  updated               DateTime                @updatedAt
+  id       String     @id @default(cuid())
+  name     String?
+  email    String     @unique
+  password String
+  avatar   String?
+  admin    Boolean    @default(false)
+  created  DateTime   @default(now())
+  updated  DateTime   @updatedAt
+  activity activity[]
+}
+
+model activity {
+  id       String   @id @default(cuid())
+  action   String
+  ip       String
+  owner    String
+  created  DateTime @default(now())
+  accounts accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
 }
