@@ -6,3 +6,14 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+model accounts {
+  id                    String                  @id @default(cuid())
+  name                  String?
+  email                 String                  @unique
+  password              String
+  avatar                String?
+  admin                 Boolean                 @default(false)
+  created               DateTime                @default(now())
+  updated               DateTime                @updatedAt
+}
