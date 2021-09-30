@@ -1,0 +1,101 @@
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { Textarea, Input, Button, DatabaseSidebar, Nav } from '@components'
+import { useApi, useValidSession } from '@hooks'
+import toast from 'react-hot-toast'
+
+export default function Project() {
+	const [database, setDatabase] = useState<any>(null)
+
+	const router = useRouter()
+	let { id } = router.query
+
+	useEffect(() => {
+		const hydrate = async () => {
+			if (id) setDatabase(await useApi(`/api/databases/${id}`))
+		}
+		hydrate()
+	}, [id])
+
+	async function updateDatabase() {
+		await toast.promise(
+			useApi(`/api/databases/${id}`, 'PATCH', {
+				name: database.name,
+				description: database.description,
+			}),
+			{
+				loading: 'Updating...',
+				success: () => {
+					return 'Updated'
+				},
+				error: 'Error, please try again',
+			}
+		)
+	}
+
+	async function deleteDatabase() {
+		await toast.promise(useApi(`/api/databases/${id}`, 'DELETE'), {
+			loading: 'Deleting... (Do not reload this page, this may take a while)',
+			success: () => {
+				router.push('/')
+				return 'Success'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
+	if (!database) return null
+
+	return (
+		<div className='max-w-6xl m-auto p-8'>
+			<Nav active={null} />
+			<div className='flex'>
+				<DatabaseSidebar
+					id={database.id}
+					title={database.name}
+					subtitle={`${database.type} ${database.version}`}
+					active='settings'
+				/>
+				<main className='bg-white rounded-lg shadow w-full p-10'>
+					<div className='mb-8'>
+						<b>Settings</b>
+					</div>
+					<div className='flex flex-col gap-2 mb-12 w-96'>
+						<Input
+							label='Database Name'
+							onChange={({ target }) => setDatabase({ ...database, name: target.value })}
+							value={database.name}
+						/>
+						<Textarea
+							label='Description (Optional)'
+							onChange={({ target }) => setDatabase({ ...database, description: target.value })}
+							value={database.description}
+						/>
+						<Input label='Database ID' value={database.id} disabled />
+						<small className='opacity-40'>This is the ID that is used internally on your server</small>
+						<Button onClick={() => updateDatabase()}>Save Changes</Button>
+					</div>
+					<div className='w-96 mb-4'>
+						<span>
+							<b>Delete Database</b>
+							<p>
+								This will unlink this database from all projects and destroy it's data, make sure you know what you are
+								doing!
+							</p>
+						</span>
+						<Button className='text-red-600 border-red-600' onClick={() => deleteDatabase()}>
+							Delete Database
+						</Button>
+					</div>
+				</main>
+			</div>
+		</div>
+	)
+}
+
+export async function getServerSideProps(context) {
+	return {
+		props: {},
+		...useValidSession(context),
+	}
+}
