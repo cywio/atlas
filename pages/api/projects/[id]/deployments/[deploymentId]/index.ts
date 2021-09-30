@@ -25,7 +25,7 @@ export default async function (req, res) {
 							.trim()
 					: deployment.logs.includes('from Dockerfile')
 					? 'Dockerfile'
-					: 'null'
+					: null
 			delete deployment.accounts.password
 			delete deployment.logs
 			res.json(deployment)
