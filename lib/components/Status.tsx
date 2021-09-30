@@ -46,6 +46,12 @@ export function Status({ status }) {
 				text: 'Not Exposed',
 				ping: false,
 			})
+		if (status === 'LIVE')
+			setItem({
+				color: 'green',
+				text: 'Live',
+				ping: true,
+			})
 	}, [status])
 
 	return (
