@@ -955,6 +955,11 @@ domain-browser@^1.1.1:
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
   integrity sha512-jnjyiM6eRyZl2H+W8Q/zLMA481hzi0eszAaBUzIVnmYVDBbnLxVNnfu1HgEBvCbL+71FrxMl3E6lpKH7Ge3OXA==
 
+dsn-parser@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/dsn-parser/-/dsn-parser-1.0.3.tgz#36d973f7004ead886d98f97483dd499ff9df8585"
+  integrity sha512-1sbyfm2ZCM0fMGK6UKo2RHZm8p4W3lWf5CcrVOfBg3bCQOT38q0MUhroep2FKp/nmMV+AlZVi1cFIL0KgzsiWQ==
+
 ecdsa-sig-formatter@1.0.11:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/ecdsa-sig-formatter/-/ecdsa-sig-formatter-1.0.11.tgz#ae0f0fa2d85045ef14a817daa3ce9acd0489e5bf"
