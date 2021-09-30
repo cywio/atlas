@@ -17,6 +17,7 @@ model accounts {
   created  DateTime   @default(now())
   updated  DateTime   @updatedAt
   activity activity[]
+  projects projects[]
 }
 
 model activity {
@@ -26,4 +27,15 @@ model activity {
   owner    String
   created  DateTime @default(now())
   accounts accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
+}
+
+model projects {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  owner       String
+  created     DateTime  @default(now())
+  updated     DateTime  @updatedAt
+  deleted     DateTime?
+  accounts    accounts  @relation(fields: [owner], references: [id], onDelete: SetNull)
 }
