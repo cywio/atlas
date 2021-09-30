@@ -8,18 +8,19 @@ generator client {
 }
 
 model accounts {
-  id          String        @id @default(cuid())
-  name        String?
-  email       String        @unique
-  password    String
-  avatar      String?
-  admin       Boolean       @default(false)
-  created     DateTime      @default(now())
-  updated     DateTime      @updatedAt
-  activity    activity[]
-  projects    projects[]
-  databases   databases[]
-  deployments deployments[]
+  id                    String                  @id @default(cuid())
+  name                  String?
+  email                 String                  @unique
+  password              String
+  avatar                String?
+  admin                 Boolean                 @default(false)
+  created               DateTime                @default(now())
+  updated               DateTime                @updatedAt
+  activity              activity[]
+  projects              projects[]
+  databases             databases[]
+  deployments           deployments[]
+  environment_variables environment_variables[]
 }
 
 model activity {
@@ -48,33 +49,46 @@ model databases {
 }
 
 model deployments {
-  id             String         @id @default(cuid())
-  origin         String
-  type           DeploymentType
-  branch         String?
-  status         String
-  commit         String?
-  message        String?
-  manual         Boolean
-  logs           String?
-  project        String
-  owner          String
-  created        DateTime       @default(now())
-  updated        DateTime       @updatedAt
-  accounts       accounts       @relation(fields: [owner], references: [id], onDelete: SetNull)
-  projects       projects       @relation(fields: [project], references: [id], onDelete: Cascade)
+  id       String         @id @default(cuid())
+  origin   String
+  type     DeploymentType
+  branch   String?
+  status   String
+  commit   String?
+  message  String?
+  manual   Boolean
+  logs     String?
+  project  String
+  owner    String
+  created  DateTime       @default(now())
+  updated  DateTime       @updatedAt
+  accounts accounts       @relation(fields: [owner], references: [id], onDelete: SetNull)
+  projects projects       @relation(fields: [project], references: [id], onDelete: Cascade)
+}
+
+model environment_variables {
+  id       String   @id @default(cuid())
+  key      String
+  value    String
+  project  String
+  owner    String
+  created  DateTime @default(now())
+  updated  DateTime @updatedAt
+  accounts accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
+  projects projects @relation(fields: [project], references: [id], onDelete: Cascade)
 }
 
 model projects {
-  id          String        @id @default(cuid())
-  name        String
-  description String?
-  owner       String
-  created     DateTime      @default(now())
-  updated     DateTime      @updatedAt
-  deleted     DateTime?
-  accounts    accounts      @relation(fields: [owner], references: [id], onDelete: SetNull)
-  deployments deployments[]
+  id                    String                  @id @default(cuid())
+  name                  String
+  description           String?
+  owner                 String
+  created               DateTime                @default(now())
+  updated               DateTime                @updatedAt
+  deleted               DateTime?
+  accounts              accounts                @relation(fields: [owner], references: [id], onDelete: SetNull)
+  deployments           deployments[]
+  environment_variables environment_variables[]
 }
 
 enum DatabaseType {
