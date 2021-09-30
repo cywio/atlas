@@ -21,6 +21,8 @@ model accounts {
   databases             databases[]
   deployments           deployments[]
   environment_variables environment_variables[]
+  domains               domains[]
+  port_mappings         port_mappings[]
 }
 
 model activity {
@@ -66,6 +68,17 @@ model deployments {
   projects projects       @relation(fields: [project], references: [id], onDelete: Cascade)
 }
 
+model domains {
+  id       String   @id @default(cuid())
+  domain   String
+  project  String
+  owner    String
+  created  DateTime @default(now())
+  updated  DateTime @updatedAt
+  accounts accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
+  projects projects @relation(fields: [project], references: [id], onDelete: Cascade)
+}
+
 model environment_variables {
   id       String   @id @default(cuid())
   key      String
@@ -76,6 +89,19 @@ model environment_variables {
   updated  DateTime @updatedAt
   accounts accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
   projects projects @relation(fields: [project], references: [id], onDelete: Cascade)
+}
+
+model port_mappings {
+  id        String   @id @default(cuid())
+  scheme    String
+  host      String
+  container String
+  project   String
+  owner     String
+  created   DateTime @default(now())
+  updated   DateTime @updatedAt
+  accounts  accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
+  projects  projects @relation(fields: [project], references: [id], onDelete: Cascade)
 }
 
 model projects {
@@ -89,6 +115,8 @@ model projects {
   accounts              accounts                @relation(fields: [owner], references: [id], onDelete: SetNull)
   deployments           deployments[]
   environment_variables environment_variables[]
+  domains               domains[]
+  port_mappings         port_mappings[]
 }
 
 enum DatabaseType {
