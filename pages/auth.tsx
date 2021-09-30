@@ -11,7 +11,7 @@ export default function Auth() {
 	async function login() {
 		setLoading(true)
 		try {
-			let token = await useApi('/api/auth', 'POST', form)
+			let { token } = await useApi('/api/auth', 'POST', form)
 			cookie.set('session', token)
 			window.location.href = '/'
 		} catch {
