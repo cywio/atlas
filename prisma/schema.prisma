@@ -8,16 +8,17 @@ generator client {
 }
 
 model accounts {
-  id       String     @id @default(cuid())
-  name     String?
-  email    String     @unique
-  password String
-  avatar   String?
-  admin    Boolean    @default(false)
-  created  DateTime   @default(now())
-  updated  DateTime   @updatedAt
-  activity activity[]
-  projects projects[]
+  id        String      @id @default(cuid())
+  name      String?
+  email     String      @unique
+  password  String
+  avatar    String?
+  admin     Boolean     @default(false)
+  created   DateTime    @default(now())
+  updated   DateTime    @updatedAt
+  activity  activity[]
+  projects  projects[]
+  databases databases[]
 }
 
 model activity {
@@ -29,6 +30,22 @@ model activity {
   accounts accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
 }
 
+model databases {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  owner       String
+  type        DatabaseType
+  version     String
+  status      String
+  dsn         String?      @unique
+  port        String?
+  backup      String?
+  created     DateTime     @default(now())
+  updated     DateTime     @updatedAt
+  accounts    accounts     @relation(fields: [owner], references: [id], onDelete: SetNull)
+}
+
 model projects {
   id          String    @id @default(cuid())
   name        String
@@ -38,4 +55,18 @@ model projects {
   updated     DateTime  @updatedAt
   deleted     DateTime?
   accounts    accounts  @relation(fields: [owner], references: [id], onDelete: SetNull)
+}
+
+enum DatabaseType {
+  mysql
+  postgres
+  mariadb
+  mongodb
+  redis
+  memcached
+  rabbitmq
+  couchdb
+  rethinkdb
+  elasticsearch
+  clickhouse
 }
