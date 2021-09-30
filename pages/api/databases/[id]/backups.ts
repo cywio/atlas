@@ -18,11 +18,11 @@ export default async function (req, res) {
 
 		if (req.method === 'POST') {
 			let { schedule, bucket, aws_access_key, aws_secret_key, password } = req.body
-			if (!schedule || !bucket || !aws_access_key || !aws_secret_key || !password) return res.status(400).send()
+			if (!schedule || !bucket || !aws_access_key || !aws_secret_key) return res.status(400).send()
 
 			await ssh(`dokku ${database.type}:backup-auth ${database.id} ${aws_access_key} ${aws_secret_key}`)
 			await ssh(`dokku ${database.type}:backup-schedule ${database.id} "${schedule}" ${bucket}`)
-			await ssh(`dokku ${database.type}:backup-set-encryptionn ${database.id} ${password}`)
+			if (password) await ssh(`dokku ${database.type}:backup-set-encryptionn ${database.id} ${password}`)
 
 			await prisma.databases.update({
 				where: { id },
@@ -30,6 +30,8 @@ export default async function (req, res) {
 					backup: JSON.stringify({
 						schedule,
 						bucket,
+						initialized: new Date(),
+						password: password ? true : false,
 					}),
 				},
 			})
