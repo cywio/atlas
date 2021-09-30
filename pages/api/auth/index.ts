@@ -10,8 +10,7 @@ export default async function (req, res) {
 			let account = await getSession(req, res)
 			delete account.password
 			res.json(account)
-		}
-		if (req.method === 'POST') {
+		} else if (req.method === 'POST') {
 			let { email, password } = req.body
 
 			if (!email || !password) return res.status(400).send()
@@ -27,8 +26,23 @@ export default async function (req, res) {
 			await log(req, account.id, `User logged in`)
 
 			res.json({ token })
+		} else if (req.method === 'PATCH') {
+			let account = await getSession(req, res)
+
+			let { name, email, avatar } = req.body
+
+			if (!email || !name) return res.status(400).send()
+
+			let updated = await prisma.accounts.update({ where: { id: account.id }, data: { name, email, avatar } })
+
+			await log(req, account.id, `User updated account info`)
+
+			res.json(updated)
+		} else {
+			res.status(405).send()
 		}
 	} catch (e) {
+		console.log(e)
 		if (typeof e == 'undefined') return e
 		res.status(500).send()
 	}
