@@ -95,7 +95,7 @@ enum DatabaseType {
   mysql
   postgres
   mariadb
-  mongodb
+  mongo
   redis
   memcached
   rabbitmq

@@ -22,7 +22,7 @@ export default async function (req, res) {
 					'mysql',
 					'postgres',
 					'mariadb',
-					'mongodb',
+					'mongo',
 					'redis',
 					'memcached',
 					'rabbitmq',
@@ -82,6 +82,7 @@ export default async function (req, res) {
 			return res.status(405).send()
 		}
 	} catch (e) {
+		console.log(e)
 		if (typeof e == 'undefined') return e
 		res.status(500).send()
 	}
