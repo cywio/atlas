@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useInterval, useApi } from '@hooks'
+import { useInterval, useApi, useValidSession } from '@hooks'
 import { Status, Nav, ProjectSidebar, Spinner } from '@components'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
@@ -105,4 +105,11 @@ export default function Deployments() {
 			)}
 		</div>
 	)
+}
+
+export async function getServerSideProps(context) {
+	return {
+		props: {},
+		...useValidSession(context),
+	}
 }

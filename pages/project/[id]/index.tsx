@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Status, Spinner, Nav, ProjectSidebar } from '@components'
-import { useApi } from '@hooks'
+import { useApi, useValidSession } from '@hooks'
 import * as timeago from 'timeago.js'
 
 export default function Project() {
@@ -87,4 +87,11 @@ export default function Project() {
 			</div>
 		</div>
 	)
+}
+
+export async function getServerSideProps(context) {
+	return {
+		props: {},
+		...useValidSession(context),
+	}
 }

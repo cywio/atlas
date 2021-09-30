@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Nav, Spinner } from '@components'
-import { useApi } from '@hooks'
+import { useApi, useValidSession } from '@hooks'
 import * as timeago from 'timeago.js'
 
 export default function Activity() {
@@ -49,4 +49,11 @@ export default function Activity() {
 			)}
 		</div>
 	)
+}
+
+export async function getServerSideProps(context) {
+	return {
+		props: {},
+		...useValidSession(context),
+	}
 }

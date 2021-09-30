@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Textarea, Input, Button, ProjectSidebar, Nav } from '@components'
-import { useApi } from '@hooks'
+import { useApi, useValidSession } from '@hooks'
 import toast from 'react-hot-toast'
 
 export default function Project() {
@@ -120,4 +120,11 @@ export default function Project() {
 			</div>
 		</div>
 	)
+}
+
+export async function getServerSideProps(context) {
+	return {
+		props: {},
+		...useValidSession(context),
+	}
 }
