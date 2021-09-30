@@ -31,7 +31,12 @@ export default function Auth() {
 					onChange={({ target }) => setForm({ ...form, password: target.value })}
 				/>
 				<div className='mt-6'>
-					<Button loading={loading} disabled={loading || !form.email || !form.password} onClick={() => login()}>
+					<Button
+						className='w-full'
+						loading={loading}
+						disabled={loading || !form.email || !form.password}
+						onClick={() => login()}
+					>
 						Login
 					</Button>
 				</div>
