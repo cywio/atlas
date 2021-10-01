@@ -82,7 +82,6 @@ export default async function (req, res) {
 			res.status(405).send()
 		}
 	} catch (e) {
-		console.log(e)
 		if (typeof e == 'undefined') return e
 		res.status(500).send()
 	}
@@ -93,7 +92,6 @@ async function appendToLogs(id, chunk) {
 		where: { id: id },
 		select: { logs: true },
 	})
-	console.log('Running appendlogs', logs)
 	await prisma.certs.update({
 		where: { id: id },
 		data: {
@@ -108,7 +106,6 @@ async function updateCompleteStatus(id) {
 		where: { id: id },
 		select: { logs: true },
 	})
-	console.log('Running updatecompletestatus', logs)
 	await prisma.certs.update({
 		where: { id: id },
 		data: {

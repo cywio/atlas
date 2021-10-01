@@ -82,7 +82,6 @@ export default async function (req, res) {
 			return res.status(405).send()
 		}
 	} catch (e) {
-		console.log(e)
 		if (typeof e == 'undefined') return e
 		res.status(500).send()
 	}
