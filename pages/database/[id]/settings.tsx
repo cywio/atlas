@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Textarea, Input, Button, DatabaseSidebar, Nav } from '@components'
+import { Textarea, Input, Button, DatabaseSidebar, Nav, Status } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import toast from 'react-hot-toast'
 
@@ -10,10 +10,11 @@ export default function Project() {
 	const router = useRouter()
 	let { id } = router.query
 
+	const hydrate = async () => {
+		if (id) setDatabase(await useApi(`/api/databases/${id}`))
+	}
+
 	useEffect(() => {
-		const hydrate = async () => {
-			if (id) setDatabase(await useApi(`/api/databases/${id}`))
-		}
 		hydrate()
 	}, [id])
 
@@ -38,6 +39,28 @@ export default function Project() {
 			loading: 'Deleting... (Do not reload this page, this may take a while)',
 			success: () => {
 				router.push('/')
+				return 'Success'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
+	async function exposeDatabase() {
+		await toast.promise(useApi(`/api/databases/${id}/expose`, 'POST'), {
+			loading: 'Please wait...',
+			success: () => {
+				hydrate()
+				return 'Success'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
+	async function unexposeDatabase() {
+		await toast.promise(useApi(`/api/databases/${id}/expose`, 'DELETE'), {
+			loading: 'Please wait...',
+			success: () => {
+				hydrate()
 				return 'Success'
 			},
 			error: 'Error, please try again',
@@ -74,6 +97,20 @@ export default function Project() {
 						<Input label='Database ID' value={database.id} disabled />
 						<small className='opacity-40'>This is the ID that is used internally on your server</small>
 						<Button onClick={() => updateDatabase()}>Save Changes</Button>
+					</div>
+					<div className='w-96 mb-4'>
+						<span>
+							<div className='flex items-center gap-3'>
+								<b>Expose Database</b>
+								<Status status={database.port ? 'EXPOSED' : 'UNEXPOSED'} />
+							</div>
+							<p>Expose your database to a random port so that you can access it from outside the host container.</p>
+						</span>
+						{database.port ? (
+							<Button onClick={() => unexposeDatabase()}>Unxpose</Button>
+						) : (
+							<Button onClick={() => exposeDatabase()}>Expose</Button>
+						)}
 					</div>
 					<div className='w-96 mb-4'>
 						<span>
