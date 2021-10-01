@@ -53,7 +53,9 @@ export default function Home() {
 					<h1>
 						Databases <span className='opacity-40 ml-1'>{databases && databases.length}</span>
 					</h1>
-					<Button>New Database</Button>
+					<a href='/create/database'>
+						<Button>New Database</Button>
+					</a>
 				</div>
 				<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 					{databases ? (
