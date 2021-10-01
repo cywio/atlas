@@ -26,7 +26,9 @@ export default function Home() {
 					<h1>
 						Projects <span className='opacity-40 ml-1'>{projects && projects.length}</span>
 					</h1>
-					<Button>New Project</Button>
+					<a href='/create'>
+						<Button>New Project</Button>
+					</a>
 				</div>
 				<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 					{projects ? (
