@@ -1,7 +1,7 @@
-import ssh from '../../../../../lib/server/ssh'
-import log from '../../../../../lib/server/log'
-import prisma from '../../../../../lib/server/db'
-import getSession from '../../../../../lib/server/session'
+import ssh from '../../../../../../lib/server/ssh'
+import log from '../../../../../../lib/server/log'
+import prisma from '../../../../../../lib/server/db'
+import getSession from '../../../../../../lib/server/session'
 
 export default async function (req, res) {
 	try {
@@ -18,6 +18,13 @@ export default async function (req, res) {
 
 		let domain = await prisma.domains.findFirst({
 			where: { id: domainId, project: projectId },
+			include: {
+				certs: {
+					orderBy: {
+						created: 'desc',
+					},
+				},
+			},
 		})
 
 		if (!domain) return res.status(404).send()
@@ -27,7 +34,7 @@ export default async function (req, res) {
 		} else if (req.method === 'DELETE') {
 			await prisma.domains.delete({ where: { id: domainId } })
 			await ssh('dokku', ['domains:remove', project.id, domain.domain])
-			await log(req, accountId, `Domain ${domain} was removed from project ${project.id}`)
+			await log(req, accountId, `Domain ${domain.domain} was removed from project ${project.name}`)
 			res.status(204).send()
 		} else {
 			res.status(405).send()

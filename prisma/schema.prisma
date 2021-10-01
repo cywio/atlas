@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model accounts {
@@ -17,12 +17,13 @@ model accounts {
   created               DateTime                @default(now())
   updated               DateTime                @updatedAt
   activity              activity[]
-  projects              projects[]
+  certs                 certs[]
   databases             databases[]
   deployments           deployments[]
-  environment_variables environment_variables[]
   domains               domains[]
+  environment_variables environment_variables[]
   port_mappings         port_mappings[]
+  projects              projects[]
 }
 
 model activity {
@@ -32,6 +33,25 @@ model activity {
   owner    String
   created  DateTime @default(now())
   accounts accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
+}
+
+model certs {
+  id                  String   @id @default(cuid())
+  issuer              String?
+  verification_method String?
+  request_method      String?
+  common_names        String?
+  status              String
+  logs              String?
+  project             String
+  domain              String
+  owner               String
+  expires             DateTime?
+  created             DateTime @default(now())
+  updated             DateTime @updatedAt
+  domains             domains  @relation(fields: [domain], references: [id], onDelete: Cascade)
+  accounts            accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
+  projects            projects @relation(fields: [project], references: [id], onDelete: Cascade)
 }
 
 model databases {
@@ -77,6 +97,7 @@ model domains {
   updated  DateTime @updatedAt
   accounts accounts @relation(fields: [owner], references: [id], onDelete: SetNull)
   projects projects @relation(fields: [project], references: [id], onDelete: Cascade)
+  certs    certs[]
 }
 
 model environment_variables {
@@ -113,9 +134,10 @@ model projects {
   updated               DateTime                @updatedAt
   deleted               DateTime?
   accounts              accounts                @relation(fields: [owner], references: [id], onDelete: SetNull)
+  certs                 certs[]
   deployments           deployments[]
-  environment_variables environment_variables[]
   domains               domains[]
+  environment_variables environment_variables[]
   port_mappings         port_mappings[]
 }
 

@@ -19,6 +19,13 @@ export default async function (req, res) {
 		if (req.method === 'GET') {
 			let domains = await prisma.domains.findMany({
 				where: { project: project.id },
+				include: {
+					certs: {
+						orderBy: {
+							created: 'desc',
+						},
+					},
+				},
 			})
 			res.json(domains)
 		} else if (req.method === 'POST') {
