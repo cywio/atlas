@@ -86,11 +86,7 @@ export default function Create() {
 						) : (
 							<Spinner size={24} />
 						)}
-						<Button
-							loading={loading}
-							disabled={loading || !form.name || !form.description || !selected}
-							onClick={() => create()}
-						>
+						<Button loading={loading} disabled={loading || !form.name || !selected} onClick={() => create()}>
 							Create Database
 						</Button>
 					</div>
