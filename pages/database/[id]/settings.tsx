@@ -131,7 +131,7 @@ export default function Project() {
 							</div>
 							<Button
 								className='text-red-600 border-red-600'
-								disabled={deleteConfirmation.toLowerCase() !== `delete ${database.name} permanently`}
+								disabled={deleteConfirmation.toLowerCase() !== `delete ${String(database.name).toLowerCase()} permanently`}
 								onClick={() => deleteDatabase()}
 							>
 								Delete Database

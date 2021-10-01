@@ -121,7 +121,7 @@ export default function Project() {
 							</div>
 							<Button
 								className='text-red-600 border-red-600'
-								disabled={deleteConfirmation.toLowerCase() !== `delete ${project.name} permanently`}
+								disabled={deleteConfirmation.toLowerCase() !== `delete ${String(project.name).toLowerCase()} permanently`}
 								onClick={() => deleteProject()}
 							>
 								Delete Project
