@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 
 export default function Project() {
 	const [project, setProject] = useState<any>({})
+	const [deleteConfirmation, setDeleteConfirmation] = useState<string>('')
 
 	const router = useRouter()
 	let { id } = router.query
@@ -88,7 +89,7 @@ export default function Project() {
 						<small className='opacity-40'>This is the ID that is used internally on your server</small>
 						<Button onClick={() => updateProject()}>Save Changes</Button>
 					</div>
-					<div className='grid grid-rows-3'>
+					<div className='flex flex-col gap-4'>
 						<div className='w-96 mb-4'>
 							<span>
 								<b>Restart App</b>
@@ -111,7 +112,18 @@ export default function Project() {
 									intact but will be disconnected from this project.
 								</p>
 							</span>
-							<Button className='text-red-600 border-red-600' onClick={() => deleteProject()}>
+							<div className='mt-5'>
+								<Input
+									label={`Type 'Delete ${project.name} permanently'`}
+									onChange={({ target }) => setDeleteConfirmation(target.value)}
+									value={deleteConfirmation}
+								/>
+							</div>
+							<Button
+								className='text-red-600 border-red-600'
+								disabled={deleteConfirmation.toLowerCase() !== `delete ${project.name} permanently`}
+								onClick={() => deleteProject()}
+							>
 								Delete Project
 							</Button>
 						</div>

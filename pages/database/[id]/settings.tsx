@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 
 export default function Project() {
 	const [database, setDatabase] = useState<any>(null)
+	const [deleteConfirmation, setDeleteConfirmation] = useState<string>('')
 
 	const router = useRouter()
 	let { id } = router.query
@@ -98,31 +99,44 @@ export default function Project() {
 						<small className='opacity-40'>This is the ID that is used internally on your server</small>
 						<Button onClick={() => updateDatabase()}>Save Changes</Button>
 					</div>
-					<div className='w-96 mb-4'>
-						<span>
-							<div className='flex items-center gap-3'>
-								<b>Expose Database</b>
-								<Status status={database.port ? 'EXPOSED' : 'UNEXPOSED'} />
+					<div className='flex flex-col gap-4'>
+						<div className='w-96 mb-4'>
+							<span>
+								<div className='flex items-center gap-3'>
+									<b>Expose Database</b>
+									<Status status={database.port ? 'EXPOSED' : 'UNEXPOSED'} />
+								</div>
+								<p>Expose your database to a random port so that you can access it from outside the host container.</p>
+							</span>
+							{database.port ? (
+								<Button onClick={() => unexposeDatabase()}>Unxpose</Button>
+							) : (
+								<Button onClick={() => exposeDatabase()}>Expose</Button>
+							)}
+						</div>
+						<div className='w-96 mb-4'>
+							<span>
+								<b>Delete Database</b>
+								<p>
+									This will unlink this database from all projects and destroy it's data, make sure you know what you are
+									doing!
+								</p>
+							</span>
+							<div className='mt-5'>
+								<Input
+									label={`Type 'Delete ${database.name} permanently'`}
+									onChange={({ target }) => setDeleteConfirmation(target.value)}
+									value={deleteConfirmation}
+								/>
 							</div>
-							<p>Expose your database to a random port so that you can access it from outside the host container.</p>
-						</span>
-						{database.port ? (
-							<Button onClick={() => unexposeDatabase()}>Unxpose</Button>
-						) : (
-							<Button onClick={() => exposeDatabase()}>Expose</Button>
-						)}
-					</div>
-					<div className='w-96 mb-4'>
-						<span>
-							<b>Delete Database</b>
-							<p>
-								This will unlink this database from all projects and destroy it's data, make sure you know what you are
-								doing!
-							</p>
-						</span>
-						<Button className='text-red-600 border-red-600' onClick={() => deleteDatabase()}>
-							Delete Database
-						</Button>
+							<Button
+								className='text-red-600 border-red-600'
+								disabled={deleteConfirmation.toLowerCase() !== `delete ${database.name} permanently`}
+								onClick={() => deleteDatabase()}
+							>
+								Delete Database
+							</Button>
+						</div>
 					</div>
 				</main>
 			</div>
