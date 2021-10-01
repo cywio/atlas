@@ -1,12 +1,18 @@
 import { useApi } from '@hooks'
 import { useEffect, useState } from 'react'
+import cookie from 'js-cookie'
 
 export function Nav({ active }) {
 	const [user, setUser] = useState(null)
 
 	useEffect(() => {
 		const hydrate = async () => {
-			setUser(await useApi('/api/auth'))
+			try {
+				setUser(await useApi('/api/auth'))
+			} catch {
+				window.location.href = '/auth'
+				cookie.set('session', '')
+			}
 		}
 		hydrate()
 	}, [])
