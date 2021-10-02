@@ -36,10 +36,23 @@ export default function Home() {
 							return (
 								<Link href={`/project/${i.id}`} passHref>
 									<a className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center hover:bg-gray-50 hover:border-gray-300 hover:cursor-pointer transition'>
-										<img src={`https://icons.duckduckgo.com/ip3/${i.domain}.ico`} className='w-10 h-10' />
+										<img
+											src={
+												i.domains.length !== 0
+													? `https://icons.duckduckgo.com/ip3/${i.domains[0].domain}.ico`
+													: `/icons/earth.svg`
+											}
+											className={`w-10 h-10 ${!i.domains.length && 'opacity-20'}`}
+										/>
 										<span>
 											<b>{i.name}</b>
-											<p className='opacity-40'>Created {timeago.format(i.created)}</p>
+											<p className='opacity-40'>
+												{i.domains.length !== 0 ? (
+													<>{i.domains[0].domain}</>
+												) : (
+													<>Created {timeago.format(i.created)}</>
+												)}
+											</p>
 										</span>
 									</a>
 								</Link>

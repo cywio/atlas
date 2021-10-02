@@ -10,6 +10,10 @@ export default async function (req, res) {
 		if (req.method === 'GET') {
 			let projects = await prisma.projects.findMany({
 				...(!admin && { where: { owner: accountId } }),
+				include: {
+					domains: true,
+					accounts: true,
+				},
 			})
 			res.json(projects)
 		} else if (req.method === 'POST') {

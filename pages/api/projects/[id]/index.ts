@@ -10,7 +10,10 @@ export default async function (req, res) {
 
 		let project = await prisma.projects.findUnique({
 			where: { id },
-			include: { accounts: true },
+			include: {
+				domains: true,
+				accounts: true,
+			},
 		})
 
 		if (!project) return res.status(404).send()

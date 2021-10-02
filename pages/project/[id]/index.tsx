@@ -28,7 +28,14 @@ export default function Project() {
 				<ProjectSidebar id={project.id} title={project.name} active='overview' />
 				<main className='bg-white rounded-lg shadow w-full p-10'>
 					<div className='flex items-center gap-4 mb-8'>
-						<img src={`https://icons.duckduckgo.com/ip3/${project.domain}.ico`} className='w-10 h-10' />
+						<img
+							src={
+								project.domains.length !== 0
+									? `https://icons.duckduckgo.com/ip3/${project.domains[0].domain}.ico`
+									: `/icons/earth.svg`
+							}
+							className={`w-10 h-10 ${!project.domains.length && 'opacity-20'}`}
+						/>
 						<span>
 							<b>{project.name}</b>
 							<p className='opacity-40'>Created {timeago.format(project.created)}</p>
