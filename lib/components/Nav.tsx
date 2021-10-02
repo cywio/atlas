@@ -1,4 +1,5 @@
 import { useApi } from '@hooks'
+import { Dropdown } from '@components'
 import { useEffect, useState } from 'react'
 import cookie from 'js-cookie'
 
@@ -10,8 +11,7 @@ export function Nav({ active }) {
 			try {
 				setUser(await useApi('/api/auth'))
 			} catch {
-				window.location.href = '/auth'
-				cookie.set('session', '')
+				window.location.href = '/logout'
 			}
 		}
 		hydrate()
@@ -35,14 +35,21 @@ export function Nav({ active }) {
 					</a>
 				</div>
 			</div>
-			<div
-				className='bg-gray-200 rounded-full w-10 h-10 border hover:opacity-80'
-				style={{
-					backgroundSize: 'cover',
-					backgroundPosition: 'center',
-					backgroundImage: `url(${user && user.avatar})`,
-				}}
-			/>
+			<Dropdown
+				items={[
+					{ text: 'Settings', action: { href: '/settings' } },
+					{ text: 'Logout', action: { href: '/logout' } },
+				]}
+			>
+				<div
+					className='bg-gray-200 rounded-full w-10 h-10 border hover:opacity-80'
+					style={{
+						backgroundSize: 'cover',
+						backgroundPosition: 'center',
+						backgroundImage: `url(${user && user.avatar})`,
+					}}
+				/>
+			</Dropdown>
 		</nav>
 	)
 }
