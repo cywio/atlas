@@ -8,6 +8,7 @@
 		"migrate": "npx prisma db push"
 	},
 	"dependencies": {
+		"@headlessui/react": "^1.4.1",
 		"@prisma/client": "^3.1.1",
 		"@types/jsonwebtoken": "^8.5.5",
 		"argon2": "^0.28.2",
