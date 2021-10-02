@@ -50,7 +50,7 @@ export default function Deployments() {
 	return (
 		<div className='max-w-6xl m-auto p-8'>
 			<Nav active={null} />
-			{deployment && project && logs ? (
+			{deployment && project ? (
 				<div className='flex'>
 					<ProjectSidebar id={deployment.project} active='deployments' title={project.name} />
 					<main className='bg-white rounded-lg shadow w-full p-10'>
@@ -121,7 +121,13 @@ export default function Deployments() {
 								<b>Build Log</b>
 							</div>
 							<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3'>
-								<p className='font-mono whitespace-pre-wrap'>{logs.replaceAll('[1G', '').replaceAll('null', '')}</p>
+								<p className='font-mono whitespace-pre-wrap'>
+									{logs ? (
+										logs.replaceAll('[1G', '').replaceAll('null', '')
+									) : (
+										<span className='opacity-40'>Your build logs will appear here soon...</span>
+									)}
+								</p>
 							</div>
 						</div>
 					</main>
