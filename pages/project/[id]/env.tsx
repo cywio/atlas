@@ -9,6 +9,7 @@ export default function Project() {
 	const [ports, setPorts] = useState<any>([])
 	const [domains, setDomains] = useState<any>([])
 	const [envVar, setEnvVar] = useState<any>([])
+	const [user, setUser] = useState<any>({})
 
 	const [domainForm, setDomainForm] = useState<any>({ domain: null })
 	const [envVarForm, setEnvVarForm] = useState<any>({ key: null, value: null })
@@ -22,6 +23,7 @@ export default function Project() {
 		if (id) setEnvVar(await useApi(`/api/projects/${id}/env`))
 		if (id) setDomains(await useApi(`/api/projects/${id}/domains`))
 		if (id) setPorts(await useApi(`/api/projects/${id}/ports`))
+		if (id) setUser(await useApi(`/api/auth`))
 	}
 
 	useEffect(() => {
@@ -132,11 +134,22 @@ export default function Project() {
 	}
 
 	async function issueCertificate(domainId) {
-		await toast.promise(useApi(`/api/projects/${id}/domains/${domainId}/certs`, 'POST', { email: '' }), {
+		await toast.promise(useApi(`/api/projects/${id}/domains/${domainId}/certs`, 'POST', { email: user.email }), {
 			loading: 'Issuing certificate, this can take a while',
 			success: () => {
 				hydrate()
 				return 'Issuing certificate, this can take a while.'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
+	async function maintenanceMode() {
+		await toast.promise(useApi(`/api/projects/${id}/maintenance`, 'POST'), {
+			loading: 'Please wait...',
+			success: () => {
+				hydrate()
+				return `Turned ${project.maintenance ? 'off' : 'on'}`
 			},
 			error: 'Error, please try again',
 		})
@@ -294,6 +307,12 @@ export default function Project() {
 						<Button onClick={() => addEnvVar()} disabled={!envVarForm.key || !envVarForm.value}>
 							Add
 						</Button>
+					</div>
+					<hr className='my-8' />
+					<div className='flex flex-col gap-2 mb-12 w-96'>
+						<b>Maintenance Mode</b>
+						<p>Maintenance mode will show a maintenance screen on all paths of your app until turned off</p>
+						<Button onClick={() => maintenanceMode()}>Turn {project.maintenance ? 'off' : 'on'}</Button>
 					</div>
 				</main>
 			</div>

@@ -130,6 +130,7 @@ model projects {
   id                    String                  @id @default(cuid())
   name                  String
   description           String?
+  maintenance           Boolean                 @default(false)
   owner                 String
   created               DateTime                @default(now())
   updated               DateTime                @updatedAt
