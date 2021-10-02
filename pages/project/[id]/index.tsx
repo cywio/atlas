@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Status, Spinner, Nav, ProjectSidebar } from '@components'
+import { Status, Nav, ProjectSidebar, DeploymentTable } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import * as timeago from 'timeago.js'
 
@@ -69,26 +69,7 @@ export default function Project() {
 						<div className='mb-4'>
 							<b>Latest Builds</b>
 						</div>
-						{builds.length ? (
-							builds.map((i) => {
-								return (
-									<a href={`${i.project}/deployments/${i.id}`}>
-										<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3 hover:border-gray-400 transition'>
-											<div className='flex flex-col max-w-lg truncate'>
-												<b>{i.message}</b>
-												<p className='opacity-60'>Deploying from {i.type}</p>
-											</div>
-											<div className='flex flex-col gap-2 items-end text-right w-32'>
-												<Status status={i.status} />
-												<p className='opacity-60'>{timeago.format(i.created)}</p>
-											</div>
-										</div>
-									</a>
-								)
-							})
-						) : (
-							<Spinner size={24} />
-						)}
+						<DeploymentTable id={project.id} limit={5} />
 					</div>
 				</main>
 			</div>

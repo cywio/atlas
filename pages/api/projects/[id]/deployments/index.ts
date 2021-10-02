@@ -17,6 +17,8 @@ export default async function (req, res) {
 		if (!admin && project.owner !== accountId) return res.status(403).send()
 
 		if (req.method === 'GET') {
+			let { take } = req.query
+
 			let deployments = await prisma.deployments.findMany({
 				where: {
 					project: project.id,
@@ -28,11 +30,14 @@ export default async function (req, res) {
 				orderBy: {
 					created: 'desc',
 				},
+				...(take && { take: +take }),
 			})
+
 			deployments.forEach((i) => {
 				delete i.accounts.password
 				delete i.accounts.otp_secret
 			})
+
 			res.json(deployments)
 		} else if (req.method === 'POST') {
 			let { origin, type, branch } = req.body
