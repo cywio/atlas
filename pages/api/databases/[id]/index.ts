@@ -19,6 +19,7 @@ export default async function (req, res) {
 
 		if (req.method === 'GET') {
 			delete database.accounts.password
+			delete database.accounts.otp_secret
 			database['is_exposed'] = !!database.port
 			database['backup'] = JSON.parse(database.backup)
 			database['connection'] = new DSNParser(database.dsn).getParts()

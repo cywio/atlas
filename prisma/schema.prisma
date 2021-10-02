@@ -12,6 +12,7 @@ model accounts {
   name                  String?
   email                 String                  @unique
   password              String
+  otp_secret            String?
   avatar                String?
   admin                 Boolean                 @default(false)
   created               DateTime                @default(now())

@@ -9,11 +9,15 @@ export default async function (req, res) {
 
 		if (req.method === 'GET') {
 			let projects = await prisma.projects.findMany({
-				...(!admin && { where: { owner: accountId } }),
 				include: {
 					domains: true,
 					accounts: true,
 				},
+				...(!admin && { where: { owner: accountId } }),
+			})
+			projects.forEach((i) => {
+				delete i.accounts.password
+				delete i.accounts.otp_secret
 			})
 			res.json(projects)
 		} else if (req.method === 'POST') {

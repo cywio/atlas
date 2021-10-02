@@ -31,6 +31,7 @@ export default async function (req, res) {
 			})
 			deployments.forEach((i) => {
 				delete i.accounts.password
+				delete i.accounts.otp_secret
 			})
 			res.json(deployments)
 		} else if (req.method === 'POST') {

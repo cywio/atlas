@@ -14,6 +14,7 @@ export default async function (req, res) {
 			})
 			activity.forEach((i) => {
 				delete i.accounts.password
+				delete i.accounts.otp_secret
 			})
 			res.json(activity)
 		} else {

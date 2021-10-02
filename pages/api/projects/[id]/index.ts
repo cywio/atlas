@@ -21,6 +21,7 @@ export default async function (req, res) {
 
 		if (req.method === 'GET') {
 			delete project.accounts.password
+			delete project.accounts.otp_secret
 			res.json(project)
 		} else if (req.method === 'PATCH') {
 			let project = await prisma.projects.update({ where: { id }, data: req.body })

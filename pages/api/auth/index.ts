@@ -3,15 +3,20 @@ import getSession from '../../../lib/server/session'
 import log from '../../../lib/server/log'
 import argon2 from 'argon2'
 import jwt from 'jsonwebtoken'
+import { authenticator } from '@otplib/preset-default'
 
 export default async function (req, res) {
 	try {
 		if (req.method === 'GET') {
 			let account = await getSession(req, res)
+
+			account['mfa_enabled'] = !!account.otp_secret
 			delete account.password
+			delete account.otp_secret
+
 			res.json(account)
 		} else if (req.method === 'POST') {
-			let { email, password } = req.body
+			let { email, password, mfa } = req.body
 
 			if (!email || !password) return res.status(400).send()
 
@@ -20,6 +25,9 @@ export default async function (req, res) {
 			if (!account) return res.status(401).send()
 
 			if (!(await argon2.verify(account.password, password))) return res.status(401).send()
+
+			if (account.otp_secret && !mfa) return res.json({ token: 'mfa' })
+			if (account.otp_secret && !authenticator.verify({ token: mfa, secret: account.otp_secret })) return res.status(401).send()
 
 			let token = jwt.sign({ sub: account.id }, process.env.SECRET, { expiresIn: '1d' })
 

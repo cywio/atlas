@@ -2,21 +2,24 @@ import { useState, useEffect } from 'react'
 import { Input, Button, Nav } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import toast from 'react-hot-toast'
+import qrcode from 'qrcode'
 
 export default function Settings() {
 	const [user, setUser] = useState<any>({})
 	const [ips, setIps] = useState<any>([])
+	const [mfa, setMfa] = useState<any>(null)
 	const [passwordForm, setPasswordForm] = useState<any>({
 		show: false,
 		old_password: '',
 		new_password: '',
 	})
 
+	const hydrate = async () => {
+		setUser(await useApi(`/api/auth`))
+		setIps((await useApi(`/api/activity`)).map((i) => i.ip).filter((a, b, c) => c.indexOf(a) === b))
+	}
+
 	useEffect(() => {
-		const hydrate = async () => {
-			setUser(await useApi(`/api/auth`))
-			setIps((await useApi(`/api/activity`)).map((i) => i.ip).filter((a, b, c) => c.indexOf(a) === b))
-		}
 		hydrate()
 	}, [])
 
@@ -65,6 +68,33 @@ export default function Settings() {
 		)
 	}
 
+	async function enableMFA() {
+		setMfa(null)
+		await toast.promise(useApi(`/api/auth/mfa`, 'POST'), {
+			loading: 'Please wait...',
+			success: (data) => {
+				qrcode.toDataURL(data.uri, (err, imgUrl) => setMfa({ ...data, qr: imgUrl }))
+				hydrate()
+				return 'MFA Successfully enabled'
+			},
+			error: () => {
+				return 'MFA is already enabled'
+			},
+		})
+	}
+
+	async function disableMFA() {
+		setMfa(null)
+		await toast.promise(useApi(`/api/auth/mfa`, 'DELETE'), {
+			loading: 'Please wait...',
+			success: () => {
+				hydrate()
+				return 'MFA Successfully disabled'
+			},
+			error: () => 'Error, please try again',
+		})
+	}
+
 	return (
 		<div className='max-w-6xl m-auto p-8'>
 			<Nav active='settings' />
@@ -111,6 +141,24 @@ export default function Settings() {
 							</div>
 						) : (
 							<Button onClick={() => setPasswordForm({ ...passwordForm, show: true })}>Change Password</Button>
+						)}
+					</div>
+					<div className='w-96 mb-8'>
+						<span>
+							<b>Two Factor Authentication</b>
+							<p>Protect your account by adding two factor authentication</p>
+						</span>
+						{mfa && (
+							<>
+								<img src={mfa.qr} />
+								<p>Scan this QR Code with any compatible 2FA app. Once you reload the page, this code will disappear.</p>
+								<b>{mfa.secret}</b>
+							</>
+						)}
+						{user.mfa_enabled ? (
+							<Button onClick={() => disableMFA()}>Disable 2FA</Button>
+						) : (
+							<Button onClick={() => enableMFA()}>Enable 2FA</Button>
 						)}
 					</div>
 					<div className='w-96 mb-8'>

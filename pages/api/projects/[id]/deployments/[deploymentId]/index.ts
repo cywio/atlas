@@ -29,6 +29,7 @@ export default async function (req, res) {
 						: null
 					: null
 			delete deployment.accounts.password
+			delete deployment.accounts.otp_secret
 			delete deployment.logs
 			res.json(deployment)
 		} else {
