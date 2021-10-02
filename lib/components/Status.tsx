@@ -12,13 +12,13 @@ export function Status({ status }) {
 			})
 		if (status === 'FAILED')
 			setItem({
-				color: 'Red',
+				color: 'red',
 				text: 'Failed',
 				ping: false,
 			})
 		if (status === 'COMPLETED')
 			setItem({
-				color: 'royalblue',
+				color: 'green',
 				text: 'Succcess',
 				ping: false,
 			})
@@ -36,7 +36,7 @@ export function Status({ status }) {
 			})
 		if (status === 'EXPOSED')
 			setItem({
-				color: 'indigo',
+				color: 'darkorchid',
 				text: 'Exposed',
 				ping: false,
 			})
@@ -50,6 +50,12 @@ export function Status({ status }) {
 			setItem({
 				color: 'green',
 				text: 'Live',
+				ping: true,
+			})
+		if (status === 'DEPLOYING')
+			setItem({
+				color: 'darkorchid',
+				text: 'Deploying',
 				ping: true,
 			})
 	}, [status])

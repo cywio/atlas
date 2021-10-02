@@ -55,10 +55,10 @@ export default async function (req, res) {
 			client
 				.exec('dokku', ['git:sync', project.id, rollback.origin, rollback.branch, '--build'], {
 					onStdout: async (chunk) => {
-						await appendToLogs(deployment.id, chunk)
+						await appendToLogs(deployment.id, project.id, chunk)
 					},
 					onStderr: async (chunk) => {
-						await appendToLogs(deployment.id, chunk)
+						await appendToLogs(deployment.id, project.id, chunk)
 					},
 				})
 				.then(async () => {
@@ -76,16 +76,16 @@ export default async function (req, res) {
 	}
 }
 
-async function appendToLogs(id, chunk) {
+async function appendToLogs(deploymentId, projectId, chunk) {
 	let { logs } = await prisma.deployments.findUnique({
-		where: { id: id },
+		where: { id: deploymentId },
 		select: { logs: true },
 	})
 	await prisma.deployments.update({
-		where: { id: id },
+		where: { id: deploymentId },
 		data: {
 			logs: `${logs}\n${chunk.toString('utf8')}`,
-			status: 'BUILDING',
+			status: logs !== null ? (logs.includes(`Deploying ${projectId}...`) ? 'DEPLOYING' : 'BUILDING') : 'BUILDING',
 		},
 	})
 }

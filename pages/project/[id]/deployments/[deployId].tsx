@@ -26,14 +26,14 @@ export default function Deployments() {
 		async () => {
 			if (id) setLogs(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`))
 		},
-		deployment.status === 'BUILDING' ? 1000 : null
+		deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 1000 : null
 	)
 
 	useInterval(
 		async () => {
 			if (id) setDeployment(await useApi(`/api/projects/${id}/deployments/${deployId}`))
 		},
-		deployment.status === 'BUILDING' ? 3000 : null
+		deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 3000 : null
 	)
 
 	async function rollback() {
