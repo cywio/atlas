@@ -6,6 +6,11 @@ import toast from 'react-hot-toast'
 export default function Settings() {
 	const [user, setUser] = useState<any>({})
 	const [ips, setIps] = useState<any>([])
+	const [passwordForm, setPasswordForm] = useState<any>({
+		show: false,
+		old_password: '',
+		new_password: '',
+	})
 
 	useEffect(() => {
 		const hydrate = async () => {
@@ -28,6 +33,34 @@ export default function Settings() {
 					return 'Updated'
 				},
 				error: 'Error, please try again',
+			}
+		)
+	}
+
+	async function changePassword() {
+		await toast.promise(
+			useApi(`/api/auth/password`, 'POST', {
+				old_password: passwordForm.old_password,
+				new_password: passwordForm.new_password,
+			}),
+			{
+				loading: 'Please wait...',
+				success: () => {
+					setPasswordForm({
+						show: false,
+						old_password: '',
+						new_password: '',
+					})
+					return 'Password successfully changed'
+				},
+				error: () => {
+					setPasswordForm({
+						show: true,
+						old_password: '',
+						new_password: '',
+					})
+					return 'Incorrect current password, try again'
+				},
 			}
 		)
 	}
@@ -55,7 +88,30 @@ export default function Settings() {
 						<span>
 							<b>Change Password</b>
 						</span>
-						<Button>Change Password</Button>
+						{passwordForm.show ? (
+							<div className='mt-4'>
+								<Input
+									label='Current Password'
+									type='password'
+									value={passwordForm.old_password}
+									onChange={({ target }) => setPasswordForm({ ...passwordForm, old_password: target.value })}
+								/>
+								<Input
+									label='New Password'
+									type='password'
+									value={passwordForm.new_password}
+									onChange={({ target }) => setPasswordForm({ ...passwordForm, new_password: target.value })}
+								/>
+								<Button
+									disabled={!passwordForm.old_password || !passwordForm.new_password}
+									onClick={() => changePassword()}
+								>
+									Change
+								</Button>
+							</div>
+						) : (
+							<Button onClick={() => setPasswordForm({ ...passwordForm, show: true })}>Change Password</Button>
+						)}
 					</div>
 					<div className='w-96 mb-8'>
 						<div className='mb-4'>
