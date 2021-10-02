@@ -33,12 +33,15 @@ export default function Project() {
 								</h1>
 							</div>
 
-							{deployments.map((i) => {
+							{deployments.map((i, k) => {
 								return (
 									<a href={`/project/${i.project}/deployments/${i.id}`}>
 										<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3 hover:border-gray-400 transition'>
 											<div className='flex flex-col max-w-lg truncate'>
-												<b>{i.message}</b>
+												<span className='flex items-center gap-2'>
+													<b>{i.message || `Deployment #${deployments.length - k}`}</b>
+													{i.rollback && <img src='/icons/rollback.svg' className='w-4 opacity-40' />}
+												</span>
 												<p className='opacity-60'>Deploying from {i.type}</p>
 											</div>
 											<div className='flex flex-col gap-2 items-end text-right w-32'>

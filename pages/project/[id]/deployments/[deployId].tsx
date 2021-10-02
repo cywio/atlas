@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useInterval, useApi, useValidSession } from '@hooks'
-import { Status, Nav, ProjectSidebar, Spinner } from '@components'
+import { Status, Nav, ProjectSidebar, Spinner, Button } from '@components'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
+import toast from 'react-hot-toast'
 
 export default function Deployments() {
 	const [project, setProject] = useState<any>({})
@@ -35,6 +36,17 @@ export default function Deployments() {
 		deployment.status === 'BUILDING' ? 3000 : null
 	)
 
+	async function rollback() {
+		await toast.promise(useApi(`/api/projects/${id}/deployments/${deployId}/rollback`, 'POST'), {
+			loading: 'Redeploying...',
+			success: ({ id: newDeploy }) => {
+				router.push(`/project/${id}/deployments/${newDeploy}`)
+				return 'Redeploy triggered'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
 	return (
 		<div className='max-w-6xl m-auto p-8'>
 			<Nav active={null} />
@@ -43,11 +55,27 @@ export default function Deployments() {
 					<ProjectSidebar id={deployment.project} active='deployments' title={project.name} />
 					<main className='bg-white rounded-lg shadow w-full p-10'>
 						<div className='mb-8'>
-							<b>{deployment.message || 'Deployment Info'}</b>
-							<p className='opacity-40'>
-								Triggered by <span className='capitalize'>{deployment.type}</span>
-								{deployment.manual && ' (Manual)'} {timeago.format(deployment.created)}
-							</p>
+							<div className='flex items-center justify-between'>
+								<span>
+									<div className='flex item-center gap-2'>
+										<b>{deployment.message || 'Deployment Info'}</b>
+										{deployment.rollback && <img src='/icons/rollback.svg' className='w-4 opacity-40' />}
+									</div>
+
+									<p className='opacity-40'>
+										Triggered by <span className='capitalize'>{deployment.type}</span>
+										{deployment.manual && ' (Manual)'} {timeago.format(deployment.created)}
+									</p>
+								</span>
+								{deployment.status === 'COMPLETED' && (
+									<Button onClick={() => rollback()}>
+										<div className='flex gap-1.5'>
+											<img src='/icons/rollback.svg' className='w-4' />
+											<span>Rollback</span>
+										</div>
+									</Button>
+								)}
+							</div>
 						</div>
 						<div className='mb-8'>
 							<div className='mb-4'>

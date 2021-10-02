@@ -16,15 +16,17 @@ export default async function (req, res) {
 
 		if (req.method === 'GET') {
 			deployment['buildpack'] =
-				deployment.logs && deployment.logs.includes('app detected')
-					? deployment.logs
-							.split('\n')
-							.find((a) => a.includes(' app detected'))
-							.split('----->')[1]
-							.split(' app detected')[0]
-							.trim()
-					: deployment.logs.includes('from Dockerfile')
-					? 'Dockerfile'
+				deployment.logs !== null
+					? deployment.logs.includes('app detected')
+						? deployment.logs
+								.split('\n')
+								.find((a) => a.includes(' app detected'))
+								.split('----->')[1]
+								.split(' app detected')[0]
+								.trim()
+						: deployment.logs.includes('from Dockerfile')
+						? 'Dockerfile'
+						: null
 					: null
 			delete deployment.accounts.password
 			delete deployment.logs
