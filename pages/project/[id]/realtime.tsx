@@ -7,6 +7,7 @@ export default function Realtime() {
 	const [project, setProject] = useState<any>(null)
 	const [logs, setLogs] = useState<any>(null)
 	const [nginxLogs, setNginxLogs] = useState<any>(null)
+	const [stats, setStats] = useState<any>(null)
 
 	const router = useRouter()
 	let { id } = router.query
@@ -16,16 +17,15 @@ export default function Realtime() {
 			if (id) setProject(await useApi(`/api/projects/${id}`))
 			if (id) setLogs(await useApi(`/api/projects/${id}/logs`))
 			if (id) setNginxLogs(await useApi(`/api/projects/${id}/nginx/logs`))
+			if (id) setStats(await useApi(`/api/projects/${id}/stats`))
 		}
 		hydrate()
 	}, [id])
 
 	useInterval(async () => {
 		if (id) setLogs(await useApi(`/api/projects/${id}/logs`))
-	}, 10000)
-
-	useInterval(async () => {
 		if (id) setNginxLogs(await useApi(`/api/projects/${id}/nginx/logs`))
+		if (id) setStats(await useApi(`/api/projects/${id}/stats`))
 	}, 10000)
 
 	if (!project) return null
@@ -37,8 +37,43 @@ export default function Realtime() {
 				<ProjectSidebar id={project.id} title={project.name} active='realtime' />
 				<main className='bg-white rounded-lg shadow w-full p-10'>
 					<div className='flex items-center justify-between mb-8'>
-						<h1>Logs</h1>
+						<h1>Realtime</h1>
 						{logs && nginxLogs && <Status status='LIVE' />}
+					</div>
+					<div className='mb-8'>
+						<div className='mb-4'>
+							<b>Container Stats</b>
+						</div>
+						<div className='w-96'>
+							{stats ? (
+								<>
+									<div className='grid gap-2' style={{ gridTemplateColumns: '30% 70%' }}>
+										<p className='opacity-40'>System CPU</p>
+										<p className='font-mono'>{stats.cpu_system}</p>
+										<p className='opacity-40'>CPU Usage</p>
+										<p className='font-mono'>{stats.cpu}</p>
+										<p className='opacity-40'>Memory Usage</p>
+										<p className='font-mono'>
+											{stats.memory.memory_percentage} ({stats.memory.memory_used} of {stats.memory.memory_limit})
+										</p>
+										<p className='opacity-40'>Network Ingress</p>
+										<p className='font-mono'>{stats.network.in}</p>
+										<p className='opacity-40'>Network Egress</p>
+										<p className='font-mono'>{stats.network.out}</p>
+										<p className='opacity-40'>Block I/O</p>
+										<p className='font-mono'>
+											{stats.block.in} / {stats.block.out}
+										</p>
+										<p className='opacity-40'>Container ID</p>
+										<p className='font-mono'>{stats.container_id}</p>
+										<p className='opacity-40'>Processes</p>
+										<p className='font-mono'>{stats.pids}</p>
+									</div>
+								</>
+							) : (
+								<Spinner size={32} />
+							)}
+						</div>
 					</div>
 					<div className='mb-8'>
 						<div className='mb-4'>
