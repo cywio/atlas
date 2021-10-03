@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
 import { Disclosure } from '@headlessui/react'
-import { Button, Nav } from '@components'
+import { Button, Nav, Input, Select } from '@components'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
 import toast from 'react-hot-toast'
@@ -10,6 +10,13 @@ import cookie from 'js-cookie'
 export default function Admin() {
 	const [user, setUser] = useState<any>(null)
 	const [admin, setAdmin] = useState<any>(null)
+	const [createUserForm, setCreateUserForm] = useState<any>({
+		name: '',
+		email: '',
+		password: '',
+		admin: false,
+		show: false,
+	})
 
 	const router = useRouter()
 
@@ -49,6 +56,40 @@ export default function Admin() {
 		})
 	}
 
+	async function makeAdmin(id) {
+		await toast.promise(useApi('/api/admin', 'POST', { action: 'make_admin', id }), {
+			loading: 'Please wait...',
+			success: () => {
+				hydrate()
+				return 'Success'
+			},
+			error: 'Error, try again',
+		})
+	}
+
+	async function deleteUser(id) {
+		await toast.promise(useApi('/api/admin', 'POST', { action: 'delete_user', id }), {
+			loading: 'Please wait...',
+			success: () => {
+				hydrate()
+				return 'Deleted successfully'
+			},
+			error: 'Error, try again',
+		})
+	}
+
+	async function createUser() {
+		await toast.promise(useApi('/api/admin', 'POST', { action: 'create_user', id: '0', data: createUserForm }), {
+			loading: 'Please wait...',
+			success: () => {
+				setCreateUserForm({ name: '', email: '', password: '', admin: false, show: false })
+				hydrate()
+				return 'Created successfully'
+			},
+			error: 'Error, try again',
+		})
+	}
+
 	return (
 		<div className='max-w-6xl m-auto p-8'>
 			<Nav active={null} />
@@ -64,10 +105,51 @@ export default function Admin() {
 						</span>
 						<Button onClick={() => clean()}>Clean</Button>
 					</div>
-					<div className=' mb-8'>
+					<div className='mb-8'>
 						<div className='mb-4'>
-							<b>Accounts</b>
+							<div className='flex items-center gap-4'>
+								<b>Accounts</b>
+								<Button className='mt-0' onClick={() => setCreateUserForm({ ...createUserForm, show: true })}>
+									Create
+								</Button>
+							</div>
 						</div>
+						{createUserForm.show ? (
+							<div className='w-96 my-4'>
+								<Input
+									label='Name'
+									value={createUserForm.name}
+									onChange={({ target }) => setCreateUserForm({ ...createUserForm, name: target.value })}
+								/>
+								<Input
+									label='Email'
+									value={createUserForm.email}
+									type='email'
+									onChange={({ target }) => setCreateUserForm({ ...createUserForm, email: target.value })}
+								/>
+								<Input
+									label='Password'
+									value={createUserForm.password}
+									type='password'
+									onChange={({ target }) => setCreateUserForm({ ...createUserForm, password: target.value })}
+								/>
+								<Select
+									label='Admin'
+									value={createUserForm.admin}
+									onChange={({ target }) => setCreateUserForm({ ...createUserForm, admin: target.value })}
+								>
+									<option value='false'>No</option>
+									<option value='true'>Yes</option>
+								</Select>
+								<Button
+									disabled={!createUserForm.name || !createUserForm.email || !createUserForm.password}
+									className='w-full'
+									onClick={() => createUser()}
+								>
+									Add
+								</Button>
+							</div>
+						) : null}
 						<div>
 							{admin &&
 								admin.map((i) => {
@@ -109,11 +191,13 @@ export default function Admin() {
 													<p className='opacity-40'>Databases</p>
 													<p>{i.databases.length}</p>
 												</div>
-												<div className='my-4 flex items-center gap-2'>
-													<Button onClick={() => loginAs(i.id, i.name)}>Login as {i.name}</Button>
-													<Button>Make Admin</Button>
-													<Button>Delete User</Button>
-												</div>
+												{i.id !== user.id && (
+													<div className='my-4 flex items-center gap-2'>
+														<Button onClick={() => loginAs(i.id, i.name)}>Login as {i.name}</Button>
+														<Button onClick={() => makeAdmin(i.id)}>Make Admin</Button>
+														<Button onClick={() => deleteUser(i.id)}>Delete User</Button>
+													</div>
+												)}
 											</Disclosure.Panel>
 										</Disclosure>
 									)
