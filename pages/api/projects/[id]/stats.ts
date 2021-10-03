@@ -26,7 +26,7 @@ export default async function (req, res) {
 			)
 				return res.status(409).send()
 
-			container_id = container_id.split('CID: ')[1].replaceAll(')', '')
+			container_id = container_id.split('CID: ')[1].replace(/\)/g, '')
 			if (!container_id) return res.status(409).send()
 
 			let container_stats: any = await ssh('docker', ['stats', '--no-stream', container_id])

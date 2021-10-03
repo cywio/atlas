@@ -22,7 +22,7 @@ export default async function (req, res) {
 				.map((i) => i.split(':'))
 				.map((i) => i.map((c) => c.trim()))
 				.map((i) => ({
-					[i[0].replaceAll(' ', '_').toLowerCase()]: i[1],
+					[i[0].replace(/\s/g, '_').toLowerCase()]: i[1],
 				}))
 				.reduce((a, b) => Object.assign(a, { [Object.keys(b)[0]]: b[Object.keys(b)[0]] }), {})
 			res.json(parsed)

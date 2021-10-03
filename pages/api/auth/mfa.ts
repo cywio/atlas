@@ -10,7 +10,7 @@ export default async function (req, res) {
 			if (account.otp_secret) return res.status(409).send()
 
 			let secret = authenticator.generateSecret()
-			let uri = authenticator.keyuri(String(req.headers['host']).replaceAll(':', ''), 'Server', secret)
+			let uri = authenticator.keyuri(String(req.headers['host']).replace(/:/g, ''), 'Server', secret)
 
 			await prisma.accounts.update({
 				where: { id: account.id },
