@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
-import { Spinner, Nav, Button, Input, Textarea } from '@components'
+import { Spinner, Nav, Button, Input, Textarea, Select } from '@components'
+import toast from 'react-hot-toast'
 
 export default function Create() {
 	let databases = [
@@ -25,6 +26,7 @@ export default function Create() {
 		description: null,
 		type: '',
 		version: 'latest',
+		is_custom_version: false,
 	})
 
 	useEffect(() => {
@@ -37,8 +39,13 @@ export default function Create() {
 	async function create() {
 		setLoading(true)
 		try {
-			let { id } = await useApi(`/api/databases/`, 'POST', { ...form, type: selected })
-			window.location.href = `/database/${id}`
+			let { valid } = await useApi(`/api/verify_tag?image=${selected}&tag=${form.version}`)
+			if (valid) {
+				let { id } = await useApi(`/api/databases/`, 'POST', { ...form, type: selected })
+				window.location.href = `/database/${id}`
+			} else {
+				toast.error(`Invalid tag for ${selected}`)
+			}
 		} finally {
 			setLoading(false)
 		}
@@ -73,12 +80,41 @@ export default function Create() {
 										}`}
 										onClick={() => setSelected(i)}
 									>
-										<div className='flex flex-col gap-1'>
-											<b>{i.name}</b>
-											<div className='flex items-center'>
+										<div className='flex flex-col gap-3 w-full'>
+											<div className='flex items-center gap-1'>
 												<img src={`/icons/${i}.svg`} className='w-8 mr-6' />
 												<p className='capitalize'>{i}</p>
 											</div>
+											{selected === i && (
+												<>
+													<Select
+														onChange={({ target }) =>
+															setForm({
+																...form,
+																...(target.value === 'latest' && { version: 'latest' }),
+																is_custom_version: target.value === 'custom',
+															})
+														}
+													>
+														<option value='latest'>Latest</option>
+														<option selected={form.is_custom_version} value='custom'>
+															Custom
+														</option>
+													</Select>
+													{form.is_custom_version ? (
+														<>
+															<Input
+																label='Tag'
+																onChange={({ target }) => setForm({ ...form, version: target.value })}
+															/>
+															<small className='opacity-60'>
+																Please enter the tag (version) of the image you want, do not include the
+																image name.
+															</small>
+														</>
+													) : null}
+												</>
+											)}
 										</div>
 									</div>
 								) : null

@@ -14,6 +14,7 @@ export default async function (req, res) {
 			plugins = String(plugins)
 				.split('\n')
 				.filter((i) => !i.includes('dokku core'))
+				.filter((i) => !i.includes('disabled'))
 				.map((i) => i.split(' ')[2])
 
 			res.send(plugins)
