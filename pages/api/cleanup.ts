@@ -4,7 +4,7 @@ import getSession from '../../lib/server/session'
 export default async function (req, res) {
 	try {
 		await getSession(req, res)
-		if (req.method === 'GET') {
+		if (req.method === 'POST') {
 			await ssh('dokku cleanup')
 			res.status(200).send()
 		} else {

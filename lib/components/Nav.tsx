@@ -1,7 +1,6 @@
 import { useApi } from '@hooks'
 import { Dropdown } from '@components'
 import { useEffect, useState } from 'react'
-import cookie from 'js-cookie'
 
 export function Nav({ active }) {
 	const [user, setUser] = useState(null)
@@ -37,6 +36,7 @@ export function Nav({ active }) {
 			</div>
 			<Dropdown
 				items={[
+					...(user && user.admin ? [{ text: 'Admin', action: { href: '/admin' } }] : []),
 					{ text: 'Settings', action: { href: '/settings' } },
 					{ text: 'Logout', action: { href: '/logout' } },
 				]}
