@@ -4,7 +4,7 @@ import { useApi, useValidSession } from '@hooks'
 import toast from 'react-hot-toast'
 import qrcode from 'qrcode'
 
-export default function Settings() {
+export default function Settings({ host }) {
 	const [user, setUser] = useState<any>({})
 	const [ips, setIps] = useState<any>([])
 	const [mfa, setMfa] = useState<any>(null)
@@ -114,6 +114,53 @@ export default function Settings() {
 						/>
 						<Input label='Account ID' value={user.id} disabled />
 					</div>
+					{host ? (
+						<div className='w-96 mb-8'>
+							<span>
+								<b>Connected Accounts</b>
+								<p>Connect accounts to setup auto-git deploys and more</p>
+							</span>
+							<div className='flex items-center gap-3 mt-3'>
+								<img src='/icons/github.svg' className='w-4' />
+								<form
+									name='gh_connect'
+									action={`https://github.com/settings/apps/new?state=gh_init:${user.id}`}
+									method='post'
+								>
+									<input
+										hidden
+										type='text'
+										name='manifest'
+										id='manifest'
+										value={JSON.stringify({
+											name: 'My Github Connection',
+											public: false,
+											request_oauth_on_install: true,
+											url: `http://${host}`,
+											redirect_url: `http://${host}`,
+											callback_urls: [`http://${host}/api/github/connect`],
+											hook_attributes: {
+												url: `http://${host}/api/github/webhook`,
+												active: true,
+											},
+											default_permissions: {
+												metadata: 'read',
+												contents: 'read',
+											},
+											default_events: ['push'],
+										})}
+									/>
+									{!user.tokens || !user.tokens.github ? (
+										<a className='underline hover:cursor-pointer' onClick={() => document['gh_connect'].submit()}>
+											Connect Github
+										</a>
+									) : (
+										<b>Connected</b>
+									)}
+								</form>
+							</div>
+						</div>
+					) : null}
 					<div className='w-96 mb-8'>
 						<span>
 							<b>Change Password</b>
@@ -179,7 +226,9 @@ export default function Settings() {
 
 export async function getServerSideProps(context) {
 	return {
-		props: {},
+		props: {
+			host: context.req.headers['host'] || null,
+		},
 		...useValidSession(context),
 	}
 }

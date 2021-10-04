@@ -14,6 +14,7 @@ model accounts {
   password              String
   otp_secret            String?
   avatar                String?
+  tokens                Json?
   admin                 Boolean                 @default(false)
   created               DateTime                @default(now())
   updated               DateTime                @updatedAt
@@ -132,6 +133,7 @@ model projects {
   name                  String
   description           String?
   maintenance           Boolean                 @default(false)
+  origin                String?
   owner                 String
   created               DateTime                @default(now())
   updated               DateTime                @updatedAt
