@@ -15,7 +15,12 @@ export default async function (req, res) {
 		if (!admin && deployment.owner !== accountId) return res.status(403).send()
 
 		if (req.method === 'GET') {
-			res.send(deployment.logs)
+			/**
+			 * @TODO Redact this at the database level before it gets inserted, this should only be temporary
+			 */
+			res.send(
+				String(deployment.logs).replace(new RegExp(`${(deployment.accounts.tokens as any).github.access_token}`, 'g'), '[REDACTED]')
+			)
 		} else {
 			res.status(405).send()
 		}
