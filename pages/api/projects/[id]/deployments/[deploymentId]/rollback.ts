@@ -32,6 +32,8 @@ export default async function (req, res) {
 					origin: rollback.origin,
 					type: rollback.type,
 					branch: rollback.branch,
+					commit: rollback.commit,
+					message: rollback.message,
 					status: 'BUILDING',
 					projects: {
 						connect: {
