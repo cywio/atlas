@@ -137,7 +137,7 @@ export default function Settings({ host }) {
 											public: false,
 											request_oauth_on_install: true,
 											url: `http://${host}`,
-											redirect_url: `http://${host}`,
+											redirect_url: `http://${host}/api/github/connect`,
 											callback_urls: [`http://${host}/api/github/connect`],
 											hook_attributes: {
 												url: `http://${host}/api/github/webhook`,
