@@ -3,7 +3,7 @@ import { Menu, Transition } from '@headlessui/react'
 
 export function Dropdown({ children, items }) {
 	return (
-		<Menu as='div' className='relative inline-block text-left'>
+		<Menu as='div' className='z-10 relative inline-block text-left'>
 			<div>
 				<Menu.Button>{children}</Menu.Button>
 			</div>
