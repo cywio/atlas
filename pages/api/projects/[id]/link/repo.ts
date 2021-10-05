@@ -20,7 +20,26 @@ export default async function (req, res) {
 		if (!project) return res.status(404).send()
 		if (!admin && project.owner !== accountId) return res.status(403).send()
 
-		if (req.method === 'POST') {
+		if (req.method === 'GET') {
+			let { access_token } = await github(req, res, project.accounts.id)
+
+			if (!access_token) return res.status(409).send()
+
+			if (!project.origin) return res.send({ connected: false })
+
+			let [type, repo_id, branch] = project.origin.split(':')
+
+			let { data: repositories } = await axios.get(`https://api.github.com/user/repos`, {
+				headers: {
+					Authorization: `token ${access_token}`,
+				},
+			})
+
+			let repo = repositories.find((a) => a.id == repo_id)
+			if (!repo) return res.status(404).send()
+
+			res.send({ connected: true, name: repo.full_name, branch, type })
+		} else if (req.method === 'POST') {
 			let { repo_id, branch } = req.body
 
 			if (!repo_id || !branch) return res.status(400).send()
