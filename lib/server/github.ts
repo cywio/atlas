@@ -5,7 +5,8 @@ export default async function (req, res, accountId) {
 	try {
 		let account = await prisma.accounts.findUnique({ where: { id: accountId } })
 
-		if (Date.now() < (account.tokens as any).github.granted + (account.tokens as any).github.expires_in * 1000) return account.tokens
+		if (Date.now() < (account.tokens as any).github.granted + (account.tokens as any).github.expires_in * 1000)
+			return (account.tokens as any).github
 
 		const { data: credentials } = await axios.post(
 			'https://github.com/login/oauth/access_token',
