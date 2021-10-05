@@ -2,6 +2,9 @@ import ssh from '../../../../../lib/server/ssh'
 import log from '../../../../../lib/server/log'
 import prisma from '../../../../../lib/server/db'
 import getSession from '../../../../../lib/server/session'
+import build from '../../../../../lib/server/build'
+import github from '../../../../../lib/server/github'
+import axios from 'axios'
 
 export default async function (req, res) {
 	try {
@@ -41,55 +44,94 @@ export default async function (req, res) {
 			res.json(deployments)
 		} else if (req.method === 'POST') {
 			let { origin, type, branch } = req.body
-
-			if (!origin || !type) return res.status(400).send()
-			if (!['docker', 'git'].includes(type)) return res.status(422).send()
+			if ((type === 'git' && !origin) || !type) return res.status(400).send()
+			if (!['docker', 'git', 'github'].includes(type)) return res.status(422).send()
 			if (type === 'git' && !branch) return res.status(400).send()
 
 			let currentDeployments = await prisma.deployments.count({ where: { project: project.id, status: 'BUILDING' } })
 			if (currentDeployments > 0) return res.status(409).send('Concurrent builds are not available')
 
-			let deployment = await prisma.deployments.create({
-				data: {
-					manual: true,
-					origin,
-					type,
-					branch,
-					status: 'BUILDING',
-					projects: {
-						connect: {
-							id: project.id,
+			if (type === 'git') {
+				let deployment = await prisma.deployments.create({
+					data: {
+						origin,
+						type,
+						branch,
+						manual: true,
+						status: 'BUILDING',
+						projects: {
+							connect: {
+								id: project.id,
+							},
+						},
+						accounts: {
+							connect: {
+								id: accountId,
+							},
 						},
 					},
-					accounts: {
-						connect: {
-							id: accountId,
+				})
+
+				await log(req, accountId, `Deployment for ${project.name} was triggered for branch ${branch}`)
+
+				res.status(202).json(deployment)
+
+				await build(project.id, deployment.id, origin, branch)
+			} else if (type === 'github') {
+				let { access_token } = await github(req, res, project.accounts.id)
+				let [originType, repo_id, branch] = project.origin.split(':')
+
+				let { data: repositories } = await axios.get(`https://api.github.com/user/repos`, {
+					headers: {
+						Authorization: `token ${access_token}`,
+					},
+				})
+
+				if (!repositories) return res.status(404).send()
+
+				let { full_name } = repositories.find((a) => a.id == repo_id)
+				if (!full_name) return res.status(404).send()
+
+				let {
+					data: [latest_commit],
+				} = await axios.get(`https://api.github.com/repos/${full_name}/commits?per_page=1`, {
+					headers: {
+						Authorization: `token ${access_token}`,
+					},
+				})
+
+				let commit = latest_commit.sha
+				let origin = `https://${access_token}@github.com/${full_name}`
+				let message = latest_commit.commit.message
+
+				let deployment = await prisma.deployments.create({
+					data: {
+						branch,
+						origin: origin.replace(new RegExp(`${access_token}`, 'g'), '[REDACTED]'),
+						commit,
+						message,
+						type: 'github',
+						status: 'BUILDING',
+						manual: true,
+						projects: {
+							connect: {
+								id: project.id,
+							},
+						},
+						accounts: {
+							connect: {
+								id: project.accounts.id,
+							},
 						},
 					},
-				},
-			})
-
-			await log(req, accountId, `Deployment for ${project.name} was triggered for branch ${branch}`)
-
-			res.status(202).json(deployment)
-
-			let client: any = await ssh('', [], true)
-
-			client
-				.exec('dokku', ['git:sync', project.id, origin, branch, '--build'], {
-					onStdout: async (chunk) => {
-						await appendToLogs(deployment.id, project.id, chunk)
-					},
-					onStderr: async (chunk) => {
-						await appendToLogs(deployment.id, project.id, chunk)
-					},
 				})
-				.then(async () => {
-					await updateCompleteStatus(deployment.id)
-				})
-				.catch(async () => {
-					await updateCompleteStatus(deployment.id)
-				})
+
+				await log(req, accountId, `Deployment for ${project.name} was triggered for branch ${branch} via GitHub Repository`)
+
+				res.status(202).json(deployment)
+
+				await build(project.id, deployment.id, origin, branch)
+			}
 		} else {
 			res.status(405).send()
 		}
@@ -97,31 +139,4 @@ export default async function (req, res) {
 		if (typeof e == 'undefined') return e
 		res.status(500).send()
 	}
-}
-
-async function appendToLogs(deploymentId, projectId, chunk) {
-	let { logs } = await prisma.deployments.findUnique({
-		where: { id: deploymentId },
-		select: { logs: true },
-	})
-	await prisma.deployments.update({
-		where: { id: deploymentId },
-		data: {
-			logs: `${logs}\n${chunk.toString('utf8')}`,
-			status: logs !== null ? (logs.includes(`Deploying ${projectId}...`) ? 'DEPLOYING' : 'BUILDING') : 'BUILDING',
-		},
-	})
-}
-
-async function updateCompleteStatus(id) {
-	let { logs } = await prisma.deployments.findUnique({
-		where: { id: id },
-		select: { logs: true },
-	})
-	await prisma.deployments.update({
-		where: { id: id },
-		data: {
-			status: logs.includes('Application deployed:') ? 'COMPLETED' : 'FAILED',
-		},
-	})
 }
