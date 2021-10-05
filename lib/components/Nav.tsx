@@ -36,6 +36,8 @@ export function Nav({ active }) {
 			</div>
 			<Dropdown
 				items={[
+					{ text: 'New App', action: { href: '/create' } },
+					{ text: 'New Database', action: { href: '/create/database' }, seperate: true },
 					...(user && user.admin ? [{ text: 'Admin', action: { href: '/admin' } }] : []),
 					{ text: 'Settings', action: { href: '/settings' } },
 					{ text: 'Logout', action: { href: '/logout' } },

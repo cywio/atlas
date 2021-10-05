@@ -21,12 +21,15 @@ export function Dropdown({ children, items }) {
 						{items.map((i) => {
 							return (
 								<Menu.Item>
-									<a
-										{...i.action}
-										className='hover:bg-gray-100 hover:text-gray-900 hover:cursor-pointer text-gray-700 block px-4 py-2 text-sm'
-									>
-										{i.text}
-									</a>
+									<>
+										<a
+											{...i.action}
+											className='hover:bg-gray-100 hover:text-gray-900 hover:cursor-pointer text-gray-700 block px-4 py-2 text-sm'
+										>
+											{i.text}
+										</a>
+										{i.seperate && <div className='border-b mb-2 pb-2' />}
+									</>
 								</Menu.Item>
 							)
 						})}
