@@ -70,6 +70,7 @@ model databases {
   created     DateTime     @default(now())
   updated     DateTime     @updatedAt
   accounts    accounts     @relation(fields: [owner], references: [id], onDelete: SetNull)
+  links       links[]
 }
 
 model deployments {
@@ -115,6 +116,15 @@ model environment_variables {
   projects projects @relation(fields: [project], references: [id], onDelete: Cascade)
 }
 
+model links {
+  id        String    @id @default(cuid())
+  project   String
+  database  String
+  created   DateTime  @default(now())
+  projects  projects  @relation(fields: [project], references: [id], onDelete: Cascade)
+  databases databases @relation(fields: [database], references: [id], onDelete: Cascade)
+}
+
 model port_mappings {
   id        String   @id @default(cuid())
   scheme    String
@@ -144,6 +154,7 @@ model projects {
   domains               domains[]
   environment_variables environment_variables[]
   port_mappings         port_mappings[]
+  links                 links[]
 }
 
 enum DatabaseType {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Input, Button, ProjectSidebar, Nav } from '@components'
+import { Input, Button, ProjectSidebar, Nav, Select } from '@components'
 import { useApi, useValidSession, useInterval } from '@hooks'
 import toast from 'react-hot-toast'
 
@@ -9,26 +9,35 @@ export default function Project() {
 	const [ports, setPorts] = useState<any>([])
 	const [domains, setDomains] = useState<any>([])
 	const [envVar, setEnvVar] = useState<any>([])
+	const [links, setLinks] = useState<any>([])
+	const [databases, setDatabases] = useState<any>([])
 	const [user, setUser] = useState<any>({})
 
 	const [domainForm, setDomainForm] = useState<any>({ domain: null })
 	const [envVarForm, setEnvVarForm] = useState<any>({ key: null, value: null })
 	const [portsForm, setPortsForm] = useState<any>({ scheme: null, host: null, container: null })
+	const [databaseSelect, setDatabaseSelect] = useState<any>('')
 
 	const router = useRouter()
 	let { id } = router.query
 
 	const hydrate = async () => {
 		if (id) setProject(await useApi(`/api/projects/${id}`))
+		if (id) setDatabases(await useApi(`/api/databases`))
 		if (id) setEnvVar(await useApi(`/api/projects/${id}/env`))
 		if (id) setDomains(await useApi(`/api/projects/${id}/domains`))
 		if (id) setPorts(await useApi(`/api/projects/${id}/ports`))
+		if (id) setLinks(await useApi(`/api/projects/${id}/link/database`))
 		if (id) setUser(await useApi(`/api/auth`))
 	}
 
 	useEffect(() => {
 		hydrate()
 	}, [id])
+
+	useEffect(() => {
+		setDatabases((databases) => [...databases.filter((a) => !links.map((b) => b.databases.id).includes(a.id))])
+	}, [links])
 
 	useInterval(
 		async () => {
@@ -150,6 +159,30 @@ export default function Project() {
 			success: () => {
 				hydrate()
 				return `Turned ${project.maintenance ? 'off' : 'on'}`
+			},
+			error: 'Error, please try again',
+		})
+	}
+
+	async function attachDatabase() {
+		await toast.promise(useApi(`/api/projects/${project.id}/link/database`, 'POST', { database_id: databaseSelect }), {
+			loading: 'Linking...',
+			success: () => {
+				setDatabaseSelect('')
+				hydrate()
+				return 'Successfully Linked'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
+	async function detachDatabase(database_id) {
+		await toast.promise(useApi(`/api/projects/${project.id}/link/database`, 'DELETE', { database_id }), {
+			loading: 'Unlinking...',
+			success: () => {
+				setDatabaseSelect('')
+				hydrate()
+				return 'Successfully unlinked'
 			},
 			error: 'Error, please try again',
 		})
@@ -306,6 +339,47 @@ export default function Project() {
 						</div>
 						<Button onClick={() => addEnvVar()} disabled={!envVarForm.key || !envVarForm.value}>
 							Add
+						</Button>
+					</div>
+					<hr className='my-8' />
+					<hr className='my-8' />
+					<div className='flex flex-col gap-2 mb-12 w-96'>
+						<b>Linked Databases</b>
+						<div style={{ gridTemplateColumns: '12fr 1fr' }} className='grid gap-2 mt-4'>
+							{links.length === 0 ? <span className='opacity-40 text-sm'>No linked databases</span> : null}
+							{links &&
+								links.map((i) => {
+									return (
+										<>
+											<div className='flex items-center'>
+												<img src={`/icons/${i.databases.type}.svg`} className='w-4 mr-3' />
+												<p>{i.databases.name}</p>
+											</div>
+											<a
+												onClick={() => detachDatabase(i.databases.id)}
+												className='hover:opacity-40 hover:cursor-pointer transition'
+											>
+												<img src='/icons/delete.svg' />
+											</a>
+										</>
+									)
+								})}
+						</div>
+						<div className='mt-6'>
+							{!databases.length ? <span className='opacity-40 text-sm'>No databases available to link</span> : null}
+							{databases.length ? (
+								<Select onChange={({ target }) => setDatabaseSelect(target.value)}>
+									<option selected={databaseSelect === ''} disabled>
+										Select a database
+									</option>
+									{databases.map((i) => {
+										return <option value={i.id}>{i.name}</option>
+									})}
+								</Select>
+							) : null}
+						</div>
+						<Button onClick={() => attachDatabase()} disabled={!databaseSelect}>
+							Link
 						</Button>
 					</div>
 					<hr className='my-8' />

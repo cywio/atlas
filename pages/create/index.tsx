@@ -44,7 +44,7 @@ export default function Create() {
 				window.location.href = `/project/${id}`
 			} else if (sourceForm.type === 'github') {
 				let { id } = await useApi(`/api/projects/`, 'POST', { ...form })
-				await useApi(`/api/projects/${id}/link`, 'POST', { repo_id: selected, branch: sourceForm.branch })
+				await useApi(`/api/projects/${id}/link/repo`, 'POST', { repo_id: selected, branch: sourceForm.branch })
 				await useApi(`/api/projects/${id}/deployments`, 'POST', { type: 'github' })
 				window.location.href = `/project/${id}`
 			}
