@@ -1,5 +1,5 @@
-import getSession from '../../../lib/server/session'
-import github from '../../../lib/server/github'
+import getSession from '@server/session'
+import github from '@server/github'
 import axios from 'axios'
 
 export default async function (req, res) {

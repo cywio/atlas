@@ -1,6 +1,6 @@
-import prisma from '../../../lib/server/db'
-import getSession from '../../../lib/server/session'
-import log from '../../../lib/server/log'
+import prisma from '@server/db'
+import getSession from '@server/session'
+import log from '@server/log'
 import argon2 from 'argon2'
 
 export default async function (req, res) {

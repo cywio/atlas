@@ -1,7 +1,7 @@
-import log from '../../../lib/server/log'
-import prisma from '../../../lib/server/db'
-import github from '../../../lib/server/github'
-import build from '../../../lib/server/build'
+import log from '@server/log'
+import prisma from '@server/db'
+import github from '@server/github'
+import build from '@server/build'
 
 export default async function (req, res) {
 	try {

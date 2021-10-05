@@ -1,9 +1,9 @@
-import ssh from '../../../../../lib/server/ssh'
-import log from '../../../../../lib/server/log'
-import prisma from '../../../../../lib/server/db'
-import getSession from '../../../../../lib/server/session'
-import build from '../../../../../lib/server/build'
-import github from '../../../../../lib/server/github'
+import ssh from '@server/ssh'
+import log from '@server/log'
+import prisma from '@server/db'
+import getSession from '@server/session'
+import build from '@server/build'
+import github from '@server/github'
 import axios from 'axios'
 
 export default async function (req, res) {

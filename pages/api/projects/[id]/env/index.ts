@@ -1,7 +1,7 @@
-import ssh from '../../../../../lib/server/ssh'
-import prisma from '../../../../../lib/server/db'
-import getSession from '../../../../../lib/server/session'
-import log from '../../../../../lib/server/log'
+import ssh from '@server/ssh'
+import prisma from '@server/db'
+import getSession from '@server/session'
+import log from '@server/log'
 
 export default async function (req, res) {
 	try {

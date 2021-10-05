@@ -1,5 +1,5 @@
-import ssh from '../../lib/server/ssh'
-import getSession from '../../lib/server/session'
+import ssh from '@server/ssh'
+import getSession from '@server/session'
 
 export default async function (req, res) {
 	try {

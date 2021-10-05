@@ -1,5 +1,5 @@
-import prisma from '../../../lib/server/db'
-import getSession from '../../../lib/server/session'
+import prisma from '@server/db'
+import getSession from '@server/session'
 import jwt from 'jsonwebtoken'
 import argon2 from 'argon2'
 

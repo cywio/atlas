@@ -1,5 +1,5 @@
+import getSession from '@server/session'
 import axios from 'axios'
-import getSession from '../../lib/server/session'
 
 export default async function (req, res) {
 	try {
