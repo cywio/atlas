@@ -31,9 +31,7 @@ export default async function (req, res) {
 
 				if (!project) return res.status(404).send()
 
-				let {
-					github: { access_token },
-				} = await github(req, res, project.accounts.id)
+				let { access_token } = await github(req, res, project.accounts.id)
 
 				let commit = after
 				let origin = `https://${access_token}@github.com/${repository.full_name}`
