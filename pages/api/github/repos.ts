@@ -1,18 +1,18 @@
 import getSession from '../../../lib/server/session'
+import github from '../../../lib/server/github'
 import axios from 'axios'
 
 export default async function (req, res) {
 	try {
-		let { tokens } = await getSession(req, res)
+		let { id: accountId } = await getSession(req, res)
+		let { access_token } = await github(req, res, accountId)
 
-		if (!tokens) return res.status(404).send()
-		let token = (tokens as { github: any }).github.access_token
-		if (!token) return res.status(403).send()
+		if (!access_token) return res.status(403).send()
 
 		if (req.method === 'GET') {
 			let { data } = await axios.get(`https://api.github.com/user/repos`, {
 				headers: {
-					Authorization: `token ${token}`,
+					Authorization: `token ${access_token}`,
 				},
 			})
 			res.json(
