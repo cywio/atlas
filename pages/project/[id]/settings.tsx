@@ -114,7 +114,7 @@ export default function Project() {
 	return (
 		<div className='max-w-6xl m-auto p-8'>
 			<Nav active={null} />
-			<div className='flex'>
+			<div className='flex flex-col md:flex-row'>
 				<ProjectSidebar id={project.id} active='settings' title={project.name} />
 				<main className='bg-white rounded-lg shadow w-full p-10'>
 					<div className='mb-8'>

@@ -33,7 +33,7 @@ export default function Realtime() {
 	return (
 		<div className='max-w-6xl m-auto p-8'>
 			<Nav active={null} />
-			<div className='flex'>
+			<div className='flex flex-col md:flex-row'>
 				<ProjectSidebar id={project.id} title={project.name} active='realtime' />
 				<main className='bg-white rounded-lg shadow w-full p-10'>
 					<div className='flex items-center justify-between mb-8'>

@@ -51,7 +51,7 @@ export default function Deployments() {
 		<div className='max-w-6xl m-auto p-8'>
 			<Nav active={null} />
 			{deployment && project ? (
-				<div className='flex'>
+				<div className='flex flex-col md:flex-row'>
 					<ProjectSidebar id={deployment.project} active='deployments' title={project.name} />
 					<main className='bg-white rounded-lg shadow w-full p-10'>
 						<div className='mb-8'>
