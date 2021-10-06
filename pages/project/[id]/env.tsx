@@ -342,7 +342,6 @@ export default function Project() {
 						</Button>
 					</div>
 					<hr className='my-8' />
-					<hr className='my-8' />
 					<div className='flex flex-col gap-2 mb-12 w-96'>
 						<b>Linked Databases</b>
 						<div style={{ gridTemplateColumns: '12fr 1fr' }} className='grid gap-2 mt-4'>
