@@ -1,7 +1,8 @@
-import ssh from '@server/ssh'
 import log from '@server/log'
 import prisma from '@server/db'
 import getSession from '@server/session'
+import build from '@server/build'
+import github from '@server/github'
 
 export default async function (req, res) {
 	try {
@@ -13,7 +14,7 @@ export default async function (req, res) {
 			include: { accounts: true },
 		})
 
-		let rollback = await prisma.deployments.findFirst({
+		let rollback: any = await prisma.deployments.findFirst({
 			where: { id: deploymentId, project: project.id },
 			include: { accounts: true },
 		})
@@ -24,6 +25,11 @@ export default async function (req, res) {
 		if (req.method === 'POST') {
 			let currentDeployments = await prisma.deployments.count({ where: { project: project.id, status: 'BUILDING' } })
 			if (currentDeployments > 0) return res.status(409).send('Concurrent builds are not available')
+
+			if (rollback.type === 'github') {
+				let { access_token } = await github(req, res, accountId)
+				rollback.authedOrigin = String(rollback.origin).replace('[REDACTED]', access_token)
+			}
 
 			let deployment = await prisma.deployments.create({
 				data: {
@@ -52,23 +58,7 @@ export default async function (req, res) {
 
 			res.status(202).json(deployment)
 
-			let client: any = await ssh('', [], true)
-
-			client
-				.exec('dokku', ['git:sync', project.id, rollback.origin, rollback.branch, '--build'], {
-					onStdout: async (chunk) => {
-						await appendToLogs(deployment.id, project.id, chunk)
-					},
-					onStderr: async (chunk) => {
-						await appendToLogs(deployment.id, project.id, chunk)
-					},
-				})
-				.then(async () => {
-					await updateCompleteStatus(deployment.id)
-				})
-				.catch(async () => {
-					await updateCompleteStatus(deployment.id)
-				})
+			await build(project.id, deployment.id, rollback.authedOrigin, rollback.commit)
 		} else {
 			res.status(405).send()
 		}
@@ -76,31 +66,4 @@ export default async function (req, res) {
 		if (typeof e == 'undefined') return e
 		res.status(500).send()
 	}
-}
-
-async function appendToLogs(deploymentId, projectId, chunk) {
-	let { logs } = await prisma.deployments.findUnique({
-		where: { id: deploymentId },
-		select: { logs: true },
-	})
-	await prisma.deployments.update({
-		where: { id: deploymentId },
-		data: {
-			logs: `${logs}\n${chunk.toString('utf8')}`,
-			status: logs !== null ? (logs.includes(`Deploying ${projectId}...`) ? 'DEPLOYING' : 'BUILDING') : 'BUILDING',
-		},
-	})
-}
-
-async function updateCompleteStatus(id) {
-	let { logs } = await prisma.deployments.findUnique({
-		where: { id: id },
-		select: { logs: true },
-	})
-	await prisma.deployments.update({
-		where: { id: id },
-		data: {
-			status: logs.includes('Application deployed:') ? 'COMPLETED' : 'FAILED',
-		},
-	})
 }
