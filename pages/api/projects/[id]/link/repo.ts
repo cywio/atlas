@@ -69,6 +69,19 @@ export default async function (req, res) {
 			await log(req, accountId, `New Github repo was linked to project ${project.name}}`)
 
 			res.send(updated)
+		} else if (req.method === 'DELETE') {
+			await prisma.projects.update({
+				where: {
+					id: project.id,
+				},
+				data: {
+					origin: null,
+				},
+			})
+
+			await log(req, accountId, `Github repo was unlinked from project ${project.name}}`)
+
+			res.status(204).send()
 		} else {
 			res.status(405).send()
 		}
