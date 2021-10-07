@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Status, Spinner, Nav, ProjectSidebar } from '@components'
+import { Status, Spinner, Nav, ProjectSidebar, Nothing } from '@components'
 import { useApi, useValidSession, useInterval } from '@hooks'
 
 export default function Realtime() {
@@ -40,65 +40,72 @@ export default function Realtime() {
 						<h1>Realtime</h1>
 						{logs && nginxLogs && <Status status='LIVE' />}
 					</div>
-					<div className='mb-8'>
-						<div className='mb-4'>
-							<b>Container Stats</b>
-						</div>
-						<div className='w-96'>
-							{stats ? (
-								<>
-									<div className='grid gap-2' style={{ gridTemplateColumns: '30% 70%' }}>
-										<p className='opacity-40'>System CPU</p>
-										<p className='font-mono'>{stats.cpu_system}</p>
-										<p className='opacity-40'>CPU Usage</p>
-										<p className='font-mono'>{stats.cpu}</p>
-										<p className='opacity-40'>Memory Usage</p>
-										<p className='font-mono'>
-											{stats.memory.memory_percentage} ({stats.memory.memory_used} of {stats.memory.memory_limit})
-										</p>
-										<p className='opacity-40'>Network Ingress</p>
-										<p className='font-mono'>{stats.network.in}</p>
-										<p className='opacity-40'>Network Egress</p>
-										<p className='font-mono'>{stats.network.out}</p>
-										<p className='opacity-40'>Block I/O</p>
-										<p className='font-mono'>
-											{stats.block.in} / {stats.block.out}
-										</p>
-										<p className='opacity-40'>Container ID</p>
-										<p className='font-mono'>{stats.container_id}</p>
-										<p className='opacity-40'>Processes</p>
-										<p className='font-mono'>{stats.pids}</p>
+					{logs === '' ? (
+						<Nothing text='Project has not been deployed yet' />
+					) : (
+						<>
+							<div className='mb-8'>
+								<div className='mb-4'>
+									<b>Container Stats</b>
+								</div>
+								<div className='w-96'>
+									{stats ? (
+										<>
+											<div className='grid gap-2' style={{ gridTemplateColumns: '30% 70%' }}>
+												<p className='opacity-40'>System CPU</p>
+												<p className='font-mono'>{stats.cpu_system}</p>
+												<p className='opacity-40'>CPU Usage</p>
+												<p className='font-mono'>{stats.cpu}</p>
+												<p className='opacity-40'>Memory Usage</p>
+												<p className='font-mono'>
+													{stats.memory.memory_percentage} ({stats.memory.memory_used} of{' '}
+													{stats.memory.memory_limit})
+												</p>
+												<p className='opacity-40'>Network Ingress</p>
+												<p className='font-mono'>{stats.network.in}</p>
+												<p className='opacity-40'>Network Egress</p>
+												<p className='font-mono'>{stats.network.out}</p>
+												<p className='opacity-40'>Block I/O</p>
+												<p className='font-mono'>
+													{stats.block.in} / {stats.block.out}
+												</p>
+												<p className='opacity-40'>Container ID</p>
+												<p className='font-mono'>{stats.container_id}</p>
+												<p className='opacity-40'>Processes</p>
+												<p className='font-mono'>{stats.pids}</p>
+											</div>
+										</>
+									) : (
+										<Spinner size={32} />
+									)}
+								</div>
+							</div>
+							<div className='mb-8'>
+								<div className='mb-4'>
+									<b>Project Log</b>
+								</div>
+								{logs ? (
+									<div className='h-96 overflow-auto flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3'>
+										<p className='font-mono whitespace-pre-wrap'>{logs}</p>
 									</div>
-								</>
-							) : (
-								<Spinner size={32} />
-							)}
-						</div>
-					</div>
-					<div className='mb-8'>
-						<div className='mb-4'>
-							<b>Project Log</b>
-						</div>
-						{logs ? (
-							<div className='h-96 overflow-auto flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3'>
-								<p className='font-mono whitespace-pre-wrap'>{logs}</p>
+								) : (
+									<Spinner size={32} />
+								)}
 							</div>
-						) : (
-							<Spinner size={32} />
-						)}
-					</div>
-					<div className='mb-8'>
-						<div className='mb-4'>
-							<b>Access Log</b>
-						</div>
-						{nginxLogs ? (
-							<div className='h-96 overflow-auto flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3'>
-								<p className='font-mono whitespace-pre-wrap'>{nginxLogs}</p>
+							<div className='mb-8'>
+								<div className='mb-4'>
+									<b>Access Log</b>
+								</div>
+								{nginxLogs ? (
+									<div className='h-96 overflow-auto flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3'>
+										<p className='font-mono whitespace-pre-wrap'>{nginxLogs}</p>
+									</div>
+								) : (
+									<Spinner size={32} />
+								)}
 							</div>
-						) : (
-							<Spinner size={32} />
-						)}
-					</div>
+						</>
+					)}
 				</main>
 			</div>
 		</div>

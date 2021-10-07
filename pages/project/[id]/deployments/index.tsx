@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Spinner, Nav, ProjectSidebar, DeploymentTable } from '@components'
+import { Spinner, Nav, ProjectSidebar, DeploymentTable, Nothing } from '@components'
 import { useApi, useValidSession } from '@hooks'
 
 export default function Project() {
@@ -30,6 +30,7 @@ export default function Project() {
 									Builds <span className='opacity-40'>{deploymentCount}</span>
 								</h1>
 							</div>
+							{!deploymentCount && <Nothing text='This project has no deployments yet, click trigger deploy to start one.' />}
 							<DeploymentTable setCount={(n) => setDeploymentCount(n)} id={project.id} />
 						</div>
 					</main>
