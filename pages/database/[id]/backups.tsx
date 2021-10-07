@@ -47,6 +47,17 @@ export default function Project() {
 		})
 	}
 
+	async function backupNow() {
+		await toast.promise(useApi(`/api/databases/${database.id}/backups/now`, 'POST'), {
+			loading: 'Queueing backup...',
+			success: () => {
+				hydrate()
+				return 'Backup created, this may take additional time to upload to your bucket'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
 	if (!database) return null
 
 	return (
@@ -97,7 +108,7 @@ export default function Project() {
 											<b>Backup Now</b>
 											<p>Trigger a full database dump to your s3 bucket right now by clicking the button below. </p>
 										</span>
-										<Button>Backup Now</Button>
+										<Button onClick={() => backupNow()}>Backup Now</Button>
 									</div>
 								</>
 							) : (
