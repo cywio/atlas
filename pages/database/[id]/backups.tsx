@@ -4,6 +4,7 @@ import { Button, Nav, Input, DatabaseSidebar } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import * as timeago from 'timeago.js'
 import toast from 'react-hot-toast'
+import cronstrue from 'cronstrue'
 
 export default function Project() {
 	const [database, setDatabase] = useState<any>(null)
@@ -27,6 +28,8 @@ export default function Project() {
 			loading: 'Creating backup...',
 			success: () => {
 				hydrate()
+				setForm({})
+				setLoading(false)
 				return 'Success'
 			},
 			error: () => {
@@ -58,6 +61,16 @@ export default function Project() {
 		})
 	}
 
+	function humanCron(exp) {
+		try {
+			return cronstrue.toString(exp, {
+				verbose: true,
+			})
+		} catch {
+			return 'Invalid cron schedule'
+		}
+	}
+
 	if (!database) return null
 
 	return (
@@ -78,16 +91,14 @@ export default function Project() {
 						<div className='flex flex-col gap-2 w-64'>
 							{database.backup !== null ? (
 								<>
-									<div className='flex flex-col gap-2 w-64 mb-8'>
-										<div className='grid grid-cols-2'>
+									<div className='flex flex-col gap-2 w-96 mb-8'>
+										<div className='grid grid-cols-2 gap-2' style={{ gridTemplateColumns: '30% 70%' }}>
 											<p className='opacity-40'>Status</p>
 											<p>{database.backup !== null ? 'Enabled' : 'Disabled'}</p>
-										</div>
-										<div className='grid grid-cols-2'>
 											<p className='opacity-40'>Initialized</p>
 											<p>{timeago.format(database.backup && database.backup.initialized)}</p>
-										</div>
-										<div className='grid grid-cols-2'>
+											<p className='opacity-40'>Schedule</p>
+											<p>{humanCron(database.backup.schedule)}</p>
 											<p className='opacity-40'>Encrypted</p>
 											<p>{database.backup && database.backup.password ? 'Yes' : 'No'}</p>
 										</div>
@@ -101,6 +112,9 @@ export default function Project() {
 									</div>
 									<div className='w-96 mb-4'>
 										<Input label='Cron Schedule' value={database.backup && database.backup.schedule} />
+										<div className='mb-4 inline-flex'>
+											<small className='opacity-40'>{humanCron(database.backup.schedule)}</small>
+										</div>
 										<Button className='float-right w-20'>Save</Button>
 									</div>
 									<div className='w-96 mb-4'>
@@ -123,6 +137,9 @@ export default function Project() {
 											label='Cron Schedule'
 											onChange={({ target }) => setForm({ ...form, schedule: target.value })}
 										/>
+										<div className='mb-4'>
+											<small className='opacity-40'>{form.schedule ? humanCron(form.schedule) : null}</small>
+										</div>
 										<Input
 											type='text'
 											label='AWS Access Key'
@@ -143,6 +160,9 @@ export default function Project() {
 											label='Password (Optional, but recommended)'
 											onChange={({ target }) => setForm({ ...form, password: target.value })}
 										/>
+										<small className='opacity-40'>
+											Your AWS credentials will not be validated, please make sure they are correct before submitting.
+										</small>
 										<Button
 											onClick={() => createBackup()}
 											loading={loading}

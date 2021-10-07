@@ -22,7 +22,7 @@ export default async function (req, res) {
 
 			await ssh(`dokku ${database.type}:backup-auth ${database.id} ${aws_access_key} ${aws_secret_key}`)
 			await ssh(`dokku ${database.type}:backup-schedule ${database.id} "${schedule}" ${bucket}`)
-			if (password) await ssh(`dokku ${database.type}:backup-set-encryptionn ${database.id} ${password}`)
+			if (password) await ssh(`dokku ${database.type}:backup-set-encryption ${database.id} ${password}`)
 
 			await prisma.databases.update({
 				where: { id },
@@ -43,7 +43,7 @@ export default async function (req, res) {
 				bucket,
 			})
 		} else if (req.method === 'DELETE') {
-			await ssh(`dokku ${database.type}:backup-unset-encryptionn ${database.id}`)
+			await ssh(`dokku ${database.type}:backup-unset-encryption ${database.id}`)
 			await ssh(`dokku ${database.type}:backup-unschedule ${database.id}`)
 			await ssh(`dokku ${database.type}:backup-deauth ${database.id}`)
 

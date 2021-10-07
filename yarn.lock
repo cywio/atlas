@@ -907,6 +907,11 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+cronstrue@^1.117.0:
+  version "1.117.0"
+  resolved "https://registry.yarnpkg.com/cronstrue/-/cronstrue-1.117.0.tgz#a7413ca510a85935380ae1ad8fef99d5b31ce8a4"
+  integrity sha512-XeRPOHNnkitGDqiLj3V6XJgn/UbrRSaWdVrDjV/IBt2cT+SRPeURiTt6Fbm16liCp78+XFklwuwWpPzPBg08NQ==
+
 crypto-browserify@3.12.0, crypto-browserify@^3.11.0:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-3.12.0.tgz#396cf9f3137f03e4b8e532c58f698254e00f80ec"
