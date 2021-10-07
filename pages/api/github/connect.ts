@@ -5,8 +5,6 @@ import axios from 'axios'
 
 export default async function (req, res) {
 	try {
-		let { id: accountId } = await getSession(req, res)
-
 		if (req.method === 'GET') {
 			let { code, state } = req.query
 			let { host } = req.headers
@@ -17,8 +15,7 @@ export default async function (req, res) {
 
 			if (!state) return res.redirect('/settings')
 
-			let [action, stateAccountId] = state.split(':')
-			if (accountId !== stateAccountId) return res.status(404).send()
+			let [action, accountId] = state.split(':')
 
 			if (action == 'gh_init') {
 				let { data } = await axios.post(`https://api.github.com/app-manifests/${code}/conversions`)
