@@ -4,6 +4,7 @@ import { Status, Nav, ProjectSidebar, Spinner, Button } from '@components'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
 import toast from 'react-hot-toast'
+import ansi from 'ansi_up'
 
 export default function Deployments() {
 	const [project, setProject] = useState<any>({})
@@ -17,14 +18,14 @@ export default function Deployments() {
 		const hydrate = async () => {
 			if (id) setProject(await useApi(`/api/projects/${id}`))
 			if (id) setDeployment(await useApi(`/api/projects/${id}/deployments/${deployId}`))
-			if (id) setLogs(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`))
+			if (id) setLogs(ansiToHtml(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`)))
 		}
 		hydrate()
 	}, [id, deployId])
 
 	useInterval(
 		async () => {
-			if (id) setLogs(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`))
+			if (id) setLogs(ansiToHtml(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`)))
 		},
 		deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 1000 : null
 	)
@@ -45,6 +46,11 @@ export default function Deployments() {
 			},
 			error: 'Error, please try again',
 		})
+	}
+
+	function ansiToHtml(logs) {
+		let convert = new ansi()
+		return convert.ansi_to_html(logs)
 	}
 
 	return (
@@ -120,14 +126,12 @@ export default function Deployments() {
 							<div className='mb-4'>
 								<b>Build Log</b>
 							</div>
-							<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3'>
-								<p className='font-mono whitespace-pre-wrap'>
-									{logs ? (
-										logs.replaceAll('[1G', '').replaceAll('null', '')
-									) : (
-										<span className='opacity-40'>Your build logs will appear here soon...</span>
-									)}
-								</p>
+							<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-start justify-between mb-3'>
+								{logs ? (
+									<div className='font-mono whitespace-pre-wrap text-sm' dangerouslySetInnerHTML={{ __html: logs }} />
+								) : (
+									<span className='opacity-40'>Your build logs will appear here soon...</span>
+								)}
 							</div>
 						</div>
 					</main>

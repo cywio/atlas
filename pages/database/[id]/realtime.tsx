@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Status, Spinner, Nav, DatabaseSidebar } from '@components'
 import { useApi, useValidSession, useInterval } from '@hooks'
 import { useRouter } from 'next/router'
+import ansi from 'ansi_up'
 
 export default function Realtime() {
 	const [database, setDatabase] = useState<any>(null)
@@ -13,14 +14,19 @@ export default function Realtime() {
 	useEffect(() => {
 		const hydrate = async () => {
 			if (id) setDatabase(await useApi(`/api/databases/${id}`))
-			if (id) setLogs(await useApi(`/api/databases/${id}/logs`))
+			if (id) setLogs(ansiToHtml(await useApi(`/api/databases/${id}/logs`)))
 		}
 		hydrate()
 	}, [id])
 
 	useInterval(async () => {
-		if (id) setLogs(await useApi(`/api/databases/${id}/logs`))
+		if (id) setLogs(ansiToHtml(await useApi(`/api/databases/${id}/logs`)))
 	}, 10000)
+
+	function ansiToHtml(logs) {
+		let convert = new ansi()
+		return convert.ansi_to_html(logs)
+	}
 
 	if (!database) return null
 
@@ -44,8 +50,8 @@ export default function Realtime() {
 							<b>Database Log</b>
 						</div>
 						{logs ? (
-							<div className='h-96 overflow-auto flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between mb-3'>
-								<p className='font-mono whitespace-pre-wrap'>{logs}</p>
+							<div className='h-96 overflow-auto flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-start justify-between mb-3'>
+								<div className='font-mono whitespace-pre-wrap text-sm' dangerouslySetInnerHTML={{ __html: logs }} />
 							</div>
 						) : (
 							<Spinner size={32} />

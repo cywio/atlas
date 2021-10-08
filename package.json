@@ -11,6 +11,7 @@
 		"@headlessui/react": "^1.4.1",
 		"@prisma/client": "^3.1.1",
 		"@types/jsonwebtoken": "^8.5.5",
+		"ansi_up": "^5.0.1",
 		"argon2": "^0.28.2",
 		"axios": "^0.21.4",
 		"cronstrue": "^1.117.0",
