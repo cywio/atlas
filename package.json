@@ -4,8 +4,11 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"db": "npx prisma introspect && npx prisma generate",
-		"migrate": "npx prisma db push"
+		"db:pull": "npx prisma introspect && npx prisma generate",
+		"db:generate": "npx prisma generate",
+		"migrate": "npx prisma db push",
+		"migrate:create": "npx prisma migrate dev",
+		"migrate:deploy": "npx prisma migrate deploy"
 	},
 	"dependencies": {
 		"@headlessui/react": "^1.4.1",
