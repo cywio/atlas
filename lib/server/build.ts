@@ -3,9 +3,14 @@ import prisma from 'lib/server/db'
 
 export default async function (projectId, deploymentId, origin, branch) {
 	try {
-		let client: any = await ssh('', [], true)
-		client
-			.exec('dokku', ['git:sync', projectId, origin, branch, '--build'], {
+		/**
+		 * @BUG Possible bug with SSH client, appends extra ' when it detects ://,
+		 * leads to failing Dokku builds
+		 * @TODO All logs don't get inserted into DB
+		 */
+		let client: any = await ssh('dokku', [], true)
+		await client
+			.exec(`git:sync ${projectId} ${origin}`, [branch, '--build'], {
 				onStdout: async (chunk) => {
 					await appendToLogs(deploymentId, projectId, chunk)
 				},
