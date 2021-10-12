@@ -28,7 +28,7 @@ export default async function (req, res) {
 
 			res.status(201).json({ token })
 
-			await ssh('dokku', ['config:unset' 'admin', 'SETUP_KEY'])
+			await ssh('dokku', ['config:unset', 'admin', 'SETUP_KEY'])
 		} else {
 			return res.status(405).send()
 		}
