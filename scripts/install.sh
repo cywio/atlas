@@ -49,6 +49,9 @@ echo '-----> Installing dashboard'
 dokku apps:create admin
 dokku postgres:create admin
 dokku postgres:link admin admin
+mkdir /var/lib/dokku/data/storage/admin-keys/
+chown dokku:dokku /var/lib/dokku/data/storage/admin-keys/
+dokku storage:mount admin /var/lib/dokku/data/storage/admin-keys/:/keys
 dokku config:set admin SERVER_IP=$HOST_IP SETUP_KEY=$SETUP_KEY SECRET=$(openssl rand -hex 64) DOCKER_USER=$DOCKER_USER
 dokku git:sync admin "https://github.com/${REPO_URL}" --build
 
@@ -66,12 +69,16 @@ ssh-keygen -b 4096 -t rsa -f docker_key -N ""
 echo '-----> Adding SSH keys to users and dokku'
 mkdir /home/$DOCKER_USER/.ssh/
 touch /home/$DOCKER_USER/.ssh/authorized_keys
-echo $(cat docker_key.pub) >> /home/$DOCKER_USER/.ssh/authorized_keys
+cat docker_key.pub >> /home/$DOCKER_USER/.ssh/authorized_keys
 cat dokku_key.pub | dokku ssh-keys:add _admin
 
 # Add private keys to config
-echo '-----> Linking SSH keys to admin'
-dokku config:set admin DOKKU_SSH_KEY="$(cat dokku_key)" DOCKER_SSH_KEY="$(cat docker_key)"
+echo '-----> Adding SSH keys to admin'
+touch /var/lib/dokku/data/storage/admin-keys/dokku
+touch /var/lib/dokku/data/storage/admin-keys/docker
+cat dokku_key >> /var/lib/dokku/data/storage/admin-keys/dokku
+cat docker_key >> /var/lib/dokku/data/storage/admin-keys/docker
+dokku ps:restart admin
 
 # Cleanup
 echo '-----> Cleaning up...'
