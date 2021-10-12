@@ -4,6 +4,7 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
+		"start:prod": "yarn migrate:deploy && yarn start",
 		"db:pull": "npx prisma introspect && npx prisma generate",
 		"db:generate": "npx prisma generate",
 		"migrate": "npx prisma db push",
