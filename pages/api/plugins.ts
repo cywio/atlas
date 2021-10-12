@@ -5,7 +5,7 @@ export default async function (req, res) {
 	try {
 		await getSession(req, res)
 		if (req.method === 'GET') {
-			let plugins: any = await ssh('dokku plugin:list')
+			let plugins: any = await ssh('dokku', ['plugin:list'])
 
 			/**
 			 * Rough implementation to get all foreign
