@@ -19,7 +19,12 @@ export default async function (req, res) {
 			 * @TODO Redact this at the database level before it gets inserted, this should only be temporary
 			 */
 			res.send(
-				String(deployment.logs).replace(new RegExp(`${(deployment.accounts.tokens as any).github.access_token}`, 'g'), '[REDACTED]')
+				deployment.type === 'github'
+					? String(deployment.logs).replace(
+							new RegExp(`${(deployment.accounts.tokens as any).github.access_token}`, 'g'),
+							'[REDACTED]'
+					  )
+					: String(deployment.logs)
 			)
 		} else {
 			res.status(405).send()
