@@ -8,12 +8,12 @@ export default async function ssh(cmd, args = [], clientOnly = false) {
 				? await ssh.connect({
 						host: process.env.SERVER_IP,
 						username: 'dokku',
-						password: process.env.DOKKU_SSH_KEY,
+						privateKey: process.env.DOKKU_SSH_KEY,
 				  })
 				: await ssh.connect({
 						host: process.env.SERVER_IP,
 						username: process.env.DOCKER_USER,
-						password: process.env.DOCKER_SSH_KEY,
+						privateKey: process.env.DOCKER_SSH_KEY,
 				  })
 		if (clientOnly) return client
 		return await client.exec(cmd, args, {
