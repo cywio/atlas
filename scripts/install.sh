@@ -75,13 +75,14 @@ dokku config:set admin DOKKU_SSH_KEY="$(cat dokku_key)" DOCKER_SSH_KEY="$(cat do
 
 # Cleanup
 echo '-----> Cleaning up...'
-unset DOCKER_USER
-unset SETUP_KEY
-unset HOST_IP
-unset CURRENT_USER
-unset CURRENT_VERSION
 rm -rf dokku_key dokku_key.pub docker_key docker_key.pub bootstrap.sh install.sh
 dokku cleanup
 
 echo '-----> Installation complete!'
 echo "-----> Go to http://${HOST_IP}:3000/setup?key=${SETUP_KEY}"
+
+unset DOCKER_USER
+unset SETUP_KEY
+unset HOST_IP
+unset CURRENT_USER
+unset CURRENT_VERSION
