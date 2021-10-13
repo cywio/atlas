@@ -57,14 +57,14 @@ export default async function (req, res) {
 
 			res.status(201).json(database)
 
-			await ssh(`dokku ${type}:create ${database.id} -I ${version}`)
+			await ssh('dokku', [`${type}:create`, database.id, `-I ${version}`])
 
 			await log(req, accountId, `Database ${name} is now ready for use`)
 
 			/**
 			 * Bug: Fails whenever an issue arises
 			 */
-			let dsn = await ssh(`dokku ${type}:info ${database.id}`)
+			let dsn = await ssh('dokku', [`${type}:info`, database.id])
 			dsn = String(dsn)
 				.split('\n')
 				.find((i) => i.includes('Dsn:'))

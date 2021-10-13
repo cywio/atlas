@@ -16,7 +16,7 @@ export default async function (req, res) {
 		if (!admin && database.owner !== accountId) return res.status(403).send()
 
 		if (req.method === 'GET') {
-			let logs = await ssh(`dokku`, [`${database.type}:logs`, database.id])
+			let logs = await ssh('dokku', [`${database.type}:logs`, database.id])
 			res.send(logs)
 		} else {
 			res.status(405).send()

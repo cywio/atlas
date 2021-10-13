@@ -30,7 +30,7 @@ export default async function (req, res) {
 			res.json(database)
 		} else if (req.method === 'DELETE') {
 			await prisma.databases.delete({ where: { id } })
-			await ssh(`dokku ${database.type}:destroy ${database.id}`, ['--force'])
+			await ssh('dokku', [`${database.type}:destroy`, database.id, '--force'])
 			await log(req, accountId, `Database ${database.name} was destroyed`)
 			res.status(204).send()
 		} else {

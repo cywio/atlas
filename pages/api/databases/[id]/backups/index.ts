@@ -20,9 +20,9 @@ export default async function (req, res) {
 			let { schedule, bucket, aws_access_key, aws_secret_key, password } = req.body
 			if (!schedule || !bucket || !aws_access_key || !aws_secret_key) return res.status(400).send()
 
-			await ssh(`dokku ${database.type}:backup-auth ${database.id} ${aws_access_key} ${aws_secret_key}`)
-			await ssh(`dokku ${database.type}:backup-schedule ${database.id} "${schedule}" ${bucket}`)
-			if (password) await ssh(`dokku ${database.type}:backup-set-encryption ${database.id} ${password}`)
+			await ssh('dokku', [`${database.type}:backup-auth`, database.id, aws_access_key, aws_secret_key])
+			await ssh('dokku', [`${database.type}:backup-schedule`, database.id, `"${schedule}"`, bucket])
+			if (password) await ssh('dokku', [`${database.type}:backup-set-encryption`, database.id, password])
 
 			await prisma.databases.update({
 				where: { id },
@@ -43,9 +43,9 @@ export default async function (req, res) {
 				bucket,
 			})
 		} else if (req.method === 'DELETE') {
-			await ssh(`dokku ${database.type}:backup-unset-encryption ${database.id}`)
-			await ssh(`dokku ${database.type}:backup-unschedule ${database.id}`)
-			await ssh(`dokku ${database.type}:backup-deauth ${database.id}`)
+			await ssh('dokku', [`${database.type}:backup-unset-encryption`, database.id])
+			await ssh('dokku', [`${database.type}:backup-unschedule`, database.id])
+			await ssh('dokku', [`${database.type}:backup-deauth`, database.id])
 
 			await prisma.databases.update({
 				where: { id },
