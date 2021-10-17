@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useInterval, useApi, useValidSession } from '@hooks'
 import { Status, Nav, ProjectSidebar, Spinner, Button } from '@components'
 import { useRouter } from 'next/router'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 import toast from 'react-hot-toast'
 import ansi from 'ansi_up'
 
@@ -70,7 +70,7 @@ export default function Deployments() {
 
 									<p className='opacity-40'>
 										Triggered by <span className='capitalize'>{deployment.type}</span>
-										{deployment.manual && ' (Manual)'} {timeago.format(deployment.created)}
+										{deployment.manual && ' (Manual)'} {dateFormat(deployment.created)}
 									</p>
 								</span>
 								{deployment.status === 'COMPLETED' && (
@@ -96,7 +96,7 @@ export default function Deployments() {
 								</div>
 								<div className='grid grid-cols-2'>
 									<p className='opacity-40'>Created</p>
-									<p>{timeago.format(deployment.created)}</p>
+									<p>{dateFormat(deployment.created)}</p>
 								</div>
 								<div className='grid grid-cols-2'>
 									<p className='opacity-40'>Buildpack Type</p>
@@ -107,6 +107,10 @@ export default function Deployments() {
 									<p className='capitalize'>
 										{deployment.type || <span className='opacity-40'>Unknown</span>} {deployment.manual && '(Manual)'}
 									</p>
+								</div>
+								<div className='grid grid-cols-2'>
+									<p className='opacity-40'>Branch</p>
+									<p className='font-mono'>{deployment.branch || <span className='opacity-40'>Unknown</span>}</p>
 								</div>
 								<div className='grid grid-cols-2'>
 									<p className='opacity-40'>Project ID</p>

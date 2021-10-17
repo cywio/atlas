@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Nav, Spinner } from '@components'
 import { useApi, useValidSession } from '@hooks'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 
 export default function Activity() {
 	const [activity, setActivity] = useState(null)
@@ -36,7 +36,7 @@ export default function Activity() {
 											</p>
 										</span>
 									</div>
-									<p className='opacity-60'>{timeago.format(i.created)}</p>
+									<p className='opacity-60'>{dateFormat(i.created)}</p>
 								</div>
 							)
 						})}

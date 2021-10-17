@@ -16,6 +16,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"@components": ["lib/components"],
+			"@utils": ["lib/utils"],
 			"@server/*": ["lib/server/*"],
 			"@hooks": ["lib/hooks"]
 		}

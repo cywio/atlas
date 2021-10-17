@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Status, Nav, DatabaseSidebar } from '@components'
 import { useApi, useValidSession } from '@hooks'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 
 export default function Project() {
 	const [database, setDatabase] = useState<any>(null)
@@ -34,7 +34,7 @@ export default function Project() {
 						<img src={`/icons/${database.type}.svg`} className='w-10 h-10' />
 						<span>
 							<b>{database.name}</b>
-							<p className='opacity-40'>Created {timeago.format(database.created)}</p>
+							<p className='opacity-40'>Created {dateFormat(database.created)}</p>
 						</span>
 					</div>
 					<div className='mb-8'>
@@ -52,7 +52,7 @@ export default function Project() {
 								</div>
 								<div className='grid grid-cols-2'>
 									<p className='opacity-40'>Created</p>
-									<p>{timeago.format(database.created)}</p>
+									<p>{dateFormat(database.created)}</p>
 								</div>
 								<div className='grid grid-cols-2'>
 									<p className='opacity-40'>Type</p>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
 import { Spinner, Nav, Button, Status } from '@components'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 import Link from 'next/link'
 
 export default function Home() {
@@ -50,7 +50,7 @@ export default function Home() {
 												{i.domains.length !== 0 ? (
 													<>{i.domains[0].domain}</>
 												) : (
-													<>Created {timeago.format(i.created)}</>
+													<>Created {dateFormat(i.created)}</>
 												)}
 											</p>
 										</span>
@@ -118,7 +118,7 @@ export default function Home() {
 											</p>
 										</span>
 									</div>
-									<p className='opacity-60'>{timeago.format(i.created)}</p>
+									<p className='opacity-60'>{dateFormat(i.created)}</p>
 								</div>
 							)
 						})

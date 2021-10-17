@@ -2,19 +2,22 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Status, Nav, ProjectSidebar, DeploymentTable } from '@components'
 import { useApi, useValidSession } from '@hooks'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 
 export default function Project() {
 	const [project, setProject] = useState<any>(null)
 	const [builds, setBuilds] = useState<any>(null)
+	const [deployments, setDeployments] = useState<any>(null)
 
 	const router = useRouter()
 	let { id } = router.query
+	let lastBulitBranch = deployments && deployments[0]?.branch;
 
 	useEffect(() => {
 		const hydrate = async () => {
 			if (id) setProject(await useApi(`/api/projects/${id}`))
 			if (id) setBuilds(await useApi(`/api/projects/${id}/deployments`))
+			if (id) setDeployments(await useApi(`/api/projects/${id}/deployments?take=1`))
 		}
 		hydrate()
 	}, [id])
@@ -38,7 +41,7 @@ export default function Project() {
 						/>
 						<span>
 							<b>{project.name}</b>
-							<p className='opacity-40'>Created {timeago.format(project.created)}</p>
+							<p className='opacity-40'>Created {dateFormat(project.created)}</p>
 						</span>
 					</div>
 					<div className='mb-8'>
@@ -56,8 +59,8 @@ export default function Project() {
 								</p>
 							</div>
 							<div className='grid grid-cols-2'>
-								<p className='opacity-40'>Created</p>
-								<p>{timeago.format(project.created)}</p>
+								<p className='opacity-40'>Branch</p>
+								<p className='font-mono'>{lastBulitBranch || <span className='opacity-40'>Unknown</span>}</p>
 							</div>
 							<div className='grid grid-cols-2'>
 								<p className='opacity-40'>Project ID</p>
@@ -69,7 +72,7 @@ export default function Project() {
 						<div className='mb-4'>
 							<b>Latest Builds</b>
 						</div>
-						<DeploymentTable id={project.id} limit={5} />
+						<DeploymentTable id={project.id} limit={5}/>
 					</div>
 				</main>
 			</div>

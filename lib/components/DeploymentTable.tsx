@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useApi } from '@hooks'
 import { Spinner, Status } from '@components'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 
 export function DeploymentTable({ id, setCount = (n) => {}, limit = 0 }) {
 	const [deployments, setDeployments] = useState<any>(null)
@@ -28,11 +28,11 @@ export function DeploymentTable({ id, setCount = (n) => {}, limit = 0 }) {
 							<b>{i.message || `Deployment #${deployments.length - k}`}</b>
 							{i.rollback && <img src='/icons/rollback.svg' className='w-4 opacity-40' />}
 						</span>
-						<p className='opacity-60'>Deploying from {i.type}</p>
+						<p className='opacity-60'>Deploying from {i.type} {i.branch ? `(${i.branch})` : ''}</p>
 					</div>
 					<div className='flex flex-col gap-2 items-end text-right w-32'>
 						<Status status={i.status} />
-						<p className='opacity-60'>{timeago.format(i.created)}</p>
+						<p className='opacity-60'>{dateFormat(i.created)}</p>
 					</div>
 				</div>
 			</a>
