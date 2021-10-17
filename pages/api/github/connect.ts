@@ -6,8 +6,11 @@ import axios from 'axios'
 export default async function (req, res) {
 	try {
 		if (req.method === 'GET') {
-			let { code, state } = req.query
-			let { host } = req.headers
+			let { code, state } = req.query;
+			let { host, referer } = req.headers;
+
+			const scheme = req.headers['x-forwarded-proto'] || (referer && referer.includes("https://") ? "https": "http");
+			const baseUri = `${scheme}://${host}`;
 
 			if (!host) return res.status(409).send()
 
@@ -36,7 +39,7 @@ export default async function (req, res) {
 				})
 
 				res.redirect(
-					`https://github.com/login/oauth/authorize?client_id=${client_id}&redirect_uri=http://${host}/api/github/connect&scope=repo%20read:user&allow_signup=false&state=gh_authorize:${accountId}`
+					`https://github.com/login/oauth/authorize?client_id=${client_id}&redirect_uri=${baseUri}/api/github/connect&scope=repo%20read:user&allow_signup=false&state=gh_authorize:${accountId}`
 				)
 
 				await ssh('dokku', ['config:set', 'admin', `GH_CLIENT_ID=${client_id}`, `GH_CLIENT_SECRET=${client_secret}`])
@@ -58,7 +61,7 @@ export default async function (req, res) {
 					{
 						client_id: (tokens as any).github.setup.client_id,
 						client_secret: (tokens as any).github.setup.client_secret,
-						redirect_uri: `http://${host}/api/github/connect`,
+						redirect_uri: `${baseUri}/api/github/connect`,
 						code: code,
 					},
 					{
