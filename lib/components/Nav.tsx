@@ -48,7 +48,7 @@ export function Nav({ active }) {
 					style={{
 						backgroundSize: 'cover',
 						backgroundPosition: 'center',
-						backgroundImage: `url(${user && user.avatar})`,
+						backgroundImage: `url(${user && user.avatar ? user.avatar : '/icons/avatar-default.png'})`,
 					}}
 				/>
 			</Dropdown>

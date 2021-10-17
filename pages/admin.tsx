@@ -161,7 +161,7 @@ export default function Admin() {
 													style={{
 														backgroundSize: 'cover',
 														backgroundPosition: 'center',
-														backgroundImage: `url(${i.avatar})`,
+														backgroundImage: `url(${i.avatar || '/icons/avatar-default.png'})`,
 													}}
 												/>
 												{i.name} <span className='opacity-40'>{i.email}</span>{' '}
