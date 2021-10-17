@@ -73,7 +73,7 @@ export default function Deployments() {
 										{deployment.manual && ' (Manual)'} {dateFormat(deployment.created)}
 									</p>
 								</span>
-								{deployment.status === 'COMPLETED' && (
+								{deployment.status === 'COMPLETED' && deployment.commit && (
 									<Button onClick={() => rollback()}>
 										<div className='flex gap-1.5'>
 											<img src='/icons/rollback.svg' className='w-4' />
@@ -103,7 +103,7 @@ export default function Deployments() {
 									<p>{deployment.buildpack || <span className='opacity-40'>Unknown</span>}</p>
 								</div>
 								<div className='grid grid-cols-2'>
-									<p className='opacity-40'>Origin</p>
+									<p className='opacity-40'>Type</p>
 									<p className='capitalize'>
 										{deployment.type || <span className='opacity-40'>Unknown</span>} {deployment.manual && '(Manual)'}
 									</p>

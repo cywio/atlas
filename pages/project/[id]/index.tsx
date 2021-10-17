@@ -3,8 +3,10 @@ import { useRouter } from 'next/router'
 import { Status, Nav, ProjectSidebar, DeploymentTable } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import {dateFormat} from '@utils'
+import {CopyToClipboard} from 'react-copy-to-clipboard'
 
-export default function Project() {
+export default function Project({scheme, host}) {
+	const baseUri = `${scheme}://${host}`;
 	const [project, setProject] = useState<any>(null)
 	const [builds, setBuilds] = useState<any>(null)
 	const [deployments, setDeployments] = useState<any>(null)
@@ -12,6 +14,10 @@ export default function Project() {
 	const router = useRouter()
 	let { id } = router.query
 	let lastBulitBranch = deployments && deployments[0]?.branch;
+	let lastOrigin = deployments && deployments[0]?.origin;
+	let lastType = deployments && deployments[0]?.type;
+	let weebHook = `${baseUri}/api/git/webhook?projectId=${id}`;
+	let supportWebHook = lastType === "git";
 
 	useEffect(() => {
 		const hydrate = async () => {
@@ -59,6 +65,14 @@ export default function Project() {
 								</p>
 							</div>
 							<div className='grid grid-cols-2'>
+								<p className='opacity-40'>Type</p>
+								<p className='capitalize'>{lastType}</p>
+							</div>
+							<div className='grid grid-cols-2'>
+								<p className='opacity-40'>Origin</p>
+								<p className='font-mono'>{lastOrigin}</p>
+							</div>
+							<div className='grid grid-cols-2'>
 								<p className='opacity-40'>Branch</p>
 								<p className='font-mono'>{lastBulitBranch || <span className='opacity-40'>Unknown</span>}</p>
 							</div>
@@ -66,6 +80,21 @@ export default function Project() {
 								<p className='opacity-40'>Project ID</p>
 								<p className='font-mono'>{project.id}</p>
 							</div>
+							{
+							supportWebHook ? 
+								<div className='grid grid-cols-2'>
+									<p className='opacity-40'>Webhook</p>
+									<p className='font-mono'>{weebHook} 
+										<a href="#" className="w-24 h-24"> 
+											<CopyToClipboard text={weebHook}>
+												<img src={'/icons/copy.svg'}></img>
+											</CopyToClipboard>
+										</a>
+									</p>
+								</div>
+								:
+								null
+							}
 						</div>
 					</div>
 					<div className='mb-8'>
@@ -81,8 +110,13 @@ export default function Project() {
 }
 
 export async function getServerSideProps(context) {
+	const {referer} = context.req.headers;
+	const scheme = context.req.headers['x-forwarded-proto'] || (referer && referer.includes("https://") ? "https": "http");
 	return {
-		props: {},
+		props: {
+			scheme,
+			host: context.req.headers['host'] || null,
+		},
 		...useValidSession(context),
 	}
 }
