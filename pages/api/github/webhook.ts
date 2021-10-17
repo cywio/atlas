@@ -2,6 +2,14 @@ import log from '@server/log'
 import prisma from '@server/db'
 import github from '@server/github'
 import build from '@server/build'
+import moment from 'moment'
+
+function allowDeployment(lastDeployment: Date) {
+    const now = moment(new Date());
+    const then = moment(lastDeployment);
+    const diff = now.diff(then, 'minutes');
+    return (diff > 5);
+}
 
 export default async function (req, res) {
 	try {
@@ -26,10 +34,21 @@ export default async function (req, res) {
 								tokens: true,
 							},
 						},
+						deployments: {
+							take: 1,
+							orderBy: {
+								created: 'desc',
+							}
+						}
 					},
 				})
 
 				if (!project) return res.status(404).send()
+
+				let lastDeployment = project?.deployments?.pop();
+
+				if(!lastDeployment || !allowDeployment(lastDeployment.created))
+					return res.status(400).send();
 
 				let { access_token } = await github(req, res, project.accounts.id)
 
