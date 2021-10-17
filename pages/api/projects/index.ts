@@ -36,6 +36,7 @@ export default async function (req, res) {
 				},
 			})
 			await ssh('dokku', ['apps:create', projects.id])
+			await ssh('dokku', ['checks:enable', projects.id])
 			await log(req, accountId, `New project created: ${name}`)
 
 			res.status(201).json(projects)
