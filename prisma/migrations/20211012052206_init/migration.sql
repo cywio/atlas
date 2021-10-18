@@ -25,7 +25,7 @@ CREATE TABLE "activity" (
     "id" TEXT NOT NULL,
     "action" TEXT NOT NULL,
     "ip" TEXT NOT NULL,
-    "owner" TEXT NOT NULL,
+    "owner" TEXT DEFAULT 'Deleted User',
     "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "activity_pkey" PRIMARY KEY ("id")
@@ -42,7 +42,7 @@ CREATE TABLE "certs" (
     "logs" TEXT,
     "project" TEXT NOT NULL,
     "domain" TEXT NOT NULL,
-    "owner" TEXT NOT NULL,
+    "owner" TEXT DEFAULT 'Deleted User',
     "expires" TIMESTAMP(3),
     "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated" TIMESTAMP(3) NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE "databases" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "owner" TEXT NOT NULL,
+    "owner" TEXT DEFAULT 'Deleted User',
     "type" "DatabaseType" NOT NULL,
     "version" TEXT NOT NULL,
     "status" TEXT NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE "deployments" (
     "rollback" BOOLEAN NOT NULL DEFAULT false,
     "logs" TEXT,
     "project" TEXT NOT NULL,
-    "owner" TEXT NOT NULL,
+    "owner" TEXT DEFAULT 'Deleted User',
     "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated" TIMESTAMP(3) NOT NULL,
 
@@ -93,7 +93,7 @@ CREATE TABLE "domains" (
     "id" TEXT NOT NULL,
     "domain" TEXT NOT NULL,
     "project" TEXT NOT NULL,
-    "owner" TEXT NOT NULL,
+    "owner" TEXT DEFAULT 'Deleted User',
     "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated" TIMESTAMP(3) NOT NULL,
 
@@ -106,7 +106,7 @@ CREATE TABLE "environment_variables" (
     "key" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "project" TEXT NOT NULL,
-    "owner" TEXT NOT NULL,
+    "owner" TEXT DEFAULT 'Deleted User',
     "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated" TIMESTAMP(3) NOT NULL,
 
@@ -130,7 +130,7 @@ CREATE TABLE "port_mappings" (
     "host" TEXT NOT NULL,
     "container" TEXT NOT NULL,
     "project" TEXT NOT NULL,
-    "owner" TEXT NOT NULL,
+    "owner" TEXT DEFAULT 'Deleted User',
     "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated" TIMESTAMP(3) NOT NULL,
 
@@ -144,7 +144,7 @@ CREATE TABLE "projects" (
     "description" TEXT,
     "maintenance" BOOLEAN NOT NULL DEFAULT false,
     "origin" TEXT,
-    "owner" TEXT NOT NULL,
+    "owner" TEXT DEFAULT 'Deleted User',
     "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated" TIMESTAMP(3) NOT NULL,
     "deleted" TIMESTAMP(3),
@@ -159,34 +159,34 @@ CREATE UNIQUE INDEX "accounts_email_key" ON "accounts"("email");
 CREATE UNIQUE INDEX "databases_dsn_key" ON "databases"("dsn");
 
 -- AddForeignKey
-ALTER TABLE "activity" ADD CONSTRAINT "activity_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "activity" ADD CONSTRAINT "activity_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "certs" ADD CONSTRAINT "certs_domain_fkey" FOREIGN KEY ("domain") REFERENCES "domains"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "certs" ADD CONSTRAINT "certs_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "certs" ADD CONSTRAINT "certs_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "certs" ADD CONSTRAINT "certs_project_fkey" FOREIGN KEY ("project") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "databases" ADD CONSTRAINT "databases_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "databases" ADD CONSTRAINT "databases_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "deployments" ADD CONSTRAINT "deployments_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "deployments" ADD CONSTRAINT "deployments_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "deployments" ADD CONSTRAINT "deployments_project_fkey" FOREIGN KEY ("project") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "domains" ADD CONSTRAINT "domains_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "domains" ADD CONSTRAINT "domains_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "domains" ADD CONSTRAINT "domains_project_fkey" FOREIGN KEY ("project") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "environment_variables" ADD CONSTRAINT "environment_variables_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "environment_variables" ADD CONSTRAINT "environment_variables_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "environment_variables" ADD CONSTRAINT "environment_variables_project_fkey" FOREIGN KEY ("project") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -198,10 +198,10 @@ ALTER TABLE "links" ADD CONSTRAINT "links_project_fkey" FOREIGN KEY ("project") 
 ALTER TABLE "links" ADD CONSTRAINT "links_database_fkey" FOREIGN KEY ("database") REFERENCES "databases"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "port_mappings" ADD CONSTRAINT "port_mappings_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "port_mappings" ADD CONSTRAINT "port_mappings_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "port_mappings" ADD CONSTRAINT "port_mappings_project_fkey" FOREIGN KEY ("project") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "projects" ADD CONSTRAINT "projects_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "projects" ADD CONSTRAINT "projects_owner_fkey" FOREIGN KEY ("owner") REFERENCES "accounts"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;

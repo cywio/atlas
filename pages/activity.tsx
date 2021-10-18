@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Nav, Spinner } from '@components'
 import { useApi, useValidSession } from '@hooks'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 
 export default function Activity() {
 	const [activity, setActivity] = useState(null)
@@ -28,7 +28,7 @@ export default function Activity() {
 							return (
 								<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between'>
 									<div className='flex gap-4 items-center max-w-lg truncate'>
-										<img src={i.accounts.avatar} className='w-10 h-10 rounded-full' />
+										<img src={i.accounts.avatar || '/icons/avatar-default.png'} className='w-10 h-10 rounded-full' />
 										<span>
 											<p>{i.action}</p>
 											<p className='opacity-40'>
@@ -36,7 +36,7 @@ export default function Activity() {
 											</p>
 										</span>
 									</div>
-									<p className='opacity-60'>{timeago.format(i.created)}</p>
+									<p className='opacity-60'>{dateFormat(i.created)}</p>
 								</div>
 							)
 						})}

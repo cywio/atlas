@@ -3,7 +3,7 @@ import { useApi, useValidSession } from '@hooks'
 import { Disclosure } from '@headlessui/react'
 import { Button, Nav, Input, Select } from '@components'
 import { useRouter } from 'next/router'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 import toast from 'react-hot-toast'
 import cookie from 'js-cookie'
 
@@ -161,7 +161,7 @@ export default function Admin() {
 													style={{
 														backgroundSize: 'cover',
 														backgroundPosition: 'center',
-														backgroundImage: `url(${i.avatar})`,
+														backgroundImage: `url(${i.avatar || '/icons/avatar-default.png'})`,
 													}}
 												/>
 												{i.name} <span className='opacity-40'>{i.email}</span>{' '}
@@ -176,7 +176,7 @@ export default function Admin() {
 													<p className='opacity-40'>Has MFA Enabled</p>
 													<p>{i.mfa_enabled ? 'Yes' : 'No'}</p>
 													<p className='opacity-40'>Created</p>
-													<p>{timeago.format(i.created)}</p>
+													<p>{dateFormat(i.created)}</p>
 												</div>
 												<hr className='my-6' />
 												<div className='grid grid-cols-2 gap-3'>

@@ -4,7 +4,8 @@ import { useApi, useValidSession } from '@hooks'
 import toast from 'react-hot-toast'
 import qrcode from 'qrcode'
 
-export default function Settings({ host }) {
+export default function Settings({scheme, host}) {
+	const baseUri = `${scheme}://${host}`;
 	const [user, setUser] = useState<any>({})
 	const [ips, setIps] = useState<any>([])
 	const [mfa, setMfa] = useState<any>(null)
@@ -136,11 +137,11 @@ export default function Settings({ host }) {
 											name: 'My Github Connection',
 											public: false,
 											request_oauth_on_install: true,
-											url: `http://${host}`,
-											redirect_url: `http://${host}/api/github/connect`,
-											callback_urls: [`http://${host}/api/github/connect`],
+											url: baseUri,
+											redirect_url: `${baseUri}/api/github/connect`,
+											callback_url: `${baseUri}/api/github/connect`,
 											hook_attributes: {
-												url: `http://${host}/api/github/webhook`,
+												url: `${baseUri}/api/github/webhook`,
 												active: true,
 											},
 											default_permissions: {
@@ -225,8 +226,11 @@ export default function Settings({ host }) {
 }
 
 export async function getServerSideProps(context) {
+	const {referer} = context.req.headers;
+	const scheme = context.req.headers['x-forwarded-proto'] || (referer && referer.includes("https://") ? "https": "http");
 	return {
 		props: {
+			scheme,
 			host: context.req.headers['host'] || null,
 		},
 		...useValidSession(context),

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
 import { Spinner, Nav, Button, Status } from '@components'
-import * as timeago from 'timeago.js'
+import {dateFormat} from '@utils'
 import Link from 'next/link'
 
 export default function Home() {
@@ -50,7 +50,7 @@ export default function Home() {
 												{i.domains.length !== 0 ? (
 													<>{i.domains[0].domain}</>
 												) : (
-													<>Created {timeago.format(i.created)}</>
+													<>Created {dateFormat(i.created)}</>
 												)}
 											</p>
 										</span>
@@ -110,7 +110,7 @@ export default function Home() {
 							return (
 								<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between'>
 									<div className='flex gap-4 items-center max-w-lg truncate'>
-										<img src={i.accounts.avatar} className='w-10 h-10 rounded-full' />
+										<img src={i.accounts.avatar || '/icons/avatar-default.png'} className='w-10 h-10 rounded-full' />
 										<span>
 											<p>{i.action}</p>
 											<p className='opacity-40'>
@@ -118,7 +118,7 @@ export default function Home() {
 											</p>
 										</span>
 									</div>
-									<p className='opacity-60'>{timeago.format(i.created)}</p>
+									<p className='opacity-60'>{dateFormat(i.created)}</p>
 								</div>
 							)
 						})
