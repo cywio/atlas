@@ -64,6 +64,12 @@ export function Status({ status }) {
 				text: 'Initializing',
 				ping: true,
 			})
+		if (status === 'QUEUED')
+			setItem({
+				color: 'teal',
+				text: 'Queued',
+				ping: true,
+			})
 	}, [status])
 
 	return (

@@ -44,7 +44,7 @@ export default async function (req, res) {
 						commit,
 						message,
 						type: 'github',
-						status: 'INITIALIZING',
+						status: 'QUEUED',
 						manual: false,
 						projects: {
 							connect: {

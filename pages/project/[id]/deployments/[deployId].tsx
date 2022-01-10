@@ -28,14 +28,24 @@ export default function Deployments() {
 		async () => {
 			if (id) setLogs(ansiToHtml(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`)))
 		},
-		deployment.status === 'INITIALIZING' || deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 1000 : null
+		deployment.status === 'QUEUED' ||
+			deployment.status === 'INITIALIZING' ||
+			deployment.status === 'BUILDING' ||
+			deployment.status === 'DEPLOYING'
+			? 1000
+			: null
 	)
 
 	useInterval(
 		async () => {
 			if (id) setDeployment(await useApi(`/api/projects/${id}/deployments/${deployId}`))
 		},
-		deployment.status === 'INITIALIZING' || deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 3000 : null
+		deployment.status === 'QUEUED' ||
+			deployment.status === 'INITIALIZING' ||
+			deployment.status === 'BUILDING' ||
+			deployment.status === 'DEPLOYING'
+			? 3000
+			: null
 	)
 
 	async function rollback() {

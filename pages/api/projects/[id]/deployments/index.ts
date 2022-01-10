@@ -48,9 +48,6 @@ export default async function (req, res) {
 			if (!['docker', 'git', 'github'].includes(type)) return res.status(422).send()
 			if (type === 'git' && !branch) return res.status(400).send()
 
-			let currentDeployments = await prisma.deployments.count({ where: { project: project.id, status: 'BUILDING' } })
-			if (currentDeployments > 0) return res.status(409).send('Concurrent builds are not available')
-
 			if (type === 'git') {
 				let deployment = await prisma.deployments.create({
 					data: {
@@ -58,7 +55,7 @@ export default async function (req, res) {
 						type,
 						branch,
 						manual: true,
-						status: 'INITIALIZING',
+						status: 'QUEUED',
 						projects: {
 							connect: {
 								id: project.id,
@@ -111,7 +108,7 @@ export default async function (req, res) {
 						commit,
 						message,
 						type: 'github',
-						status: 'INITIALIZING',
+						status: 'QUEUED',
 						manual: true,
 						projects: {
 							connect: {

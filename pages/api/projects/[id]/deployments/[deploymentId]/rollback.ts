@@ -23,9 +23,6 @@ export default async function (req, res) {
 		if (!admin && project.owner !== accountId) return res.status(403).send()
 
 		if (req.method === 'POST') {
-			let currentDeployments = await prisma.deployments.count({ where: { project: project.id, status: 'BUILDING' } })
-			if (currentDeployments > 0) return res.status(409).send('Concurrent builds are not available')
-
 			let deployment = await prisma.deployments.create({
 				data: {
 					manual: true,
@@ -35,7 +32,7 @@ export default async function (req, res) {
 					branch: rollback.branch,
 					commit: rollback.commit,
 					message: rollback.message,
-					status: 'INITIALIZING',
+					status: 'QUEUED',
 					projects: {
 						connect: {
 							id: project.id,
