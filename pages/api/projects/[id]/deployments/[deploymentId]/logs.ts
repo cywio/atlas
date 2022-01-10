@@ -24,7 +24,7 @@ export default async function (req, res) {
 							new RegExp(`${(deployment.accounts.tokens as any).github.access_token}`, 'g'),
 							'[REDACTED]'
 					  )
-					: String(deployment.logs)
+					: String(deployment.logs || '')
 			)
 		} else {
 			res.status(405).send()
