@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Input, Button, ProjectSidebar, Nav, Select } from '@components'
+import { Input, Button, ProjectSidebar, Nav, Select, Container } from '@components'
 import { useApi, useValidSession, useInterval } from '@hooks'
 import toast from 'react-hot-toast'
 
@@ -189,7 +189,7 @@ export default function Project() {
 	}
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='flex flex-col md:flex-row'>
 				<ProjectSidebar id={project.id} active='env' title={project.name} />
@@ -389,7 +389,7 @@ export default function Project() {
 					</div>
 				</main>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

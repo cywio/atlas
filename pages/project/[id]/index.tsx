@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Status, Nav, ProjectSidebar, DeploymentTable } from '@components'
+import { Status, Nav, ProjectSidebar, DeploymentTable, Container } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import * as timeago from 'timeago.js'
 
@@ -22,7 +22,7 @@ export default function Project() {
 	if (!project || !builds) return null
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='flex flex-col md:flex-row'>
 				<ProjectSidebar id={project.id} title={project.name} active='overview' />
@@ -73,7 +73,7 @@ export default function Project() {
 					</div>
 				</main>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

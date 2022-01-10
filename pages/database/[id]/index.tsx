@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Status, Nav, DatabaseSidebar } from '@components'
+import { Status, Nav, DatabaseSidebar, Container } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import * as timeago from 'timeago.js'
 
@@ -20,7 +20,7 @@ export default function Project() {
 	if (!database) return null
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='flex'>
 				<DatabaseSidebar
@@ -110,7 +110,7 @@ export default function Project() {
 					</div>
 				</main>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Textarea, Input, Button, DatabaseSidebar, Nav, Status } from '@components'
+import { Textarea, Input, Button, DatabaseSidebar, Nav, Status, Container } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import toast from 'react-hot-toast'
 
@@ -71,7 +71,7 @@ export default function Project() {
 	if (!database) return null
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='flex'>
 				<DatabaseSidebar
@@ -140,7 +140,7 @@ export default function Project() {
 					</div>
 				</main>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

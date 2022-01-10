@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Status, Spinner, Nav, DatabaseSidebar } from '@components'
+import { Status, Spinner, Nav, DatabaseSidebar, Container } from '@components'
 import { useApi, useValidSession, useInterval } from '@hooks'
 import { useRouter } from 'next/router'
 import ansi from 'ansi_up'
@@ -31,7 +31,7 @@ export default function Realtime() {
 	if (!database) return null
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='flex'>
 				<DatabaseSidebar
@@ -59,7 +59,7 @@ export default function Realtime() {
 					</div>
 				</main>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

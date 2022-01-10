@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useInterval, useApi, useValidSession } from '@hooks'
-import { Status, Nav, ProjectSidebar, Spinner, Button } from '@components'
+import { Status, Nav, ProjectSidebar, Spinner, Button, Container } from '@components'
 import { intervalToDuration, formatDuration } from 'date-fns'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
@@ -95,7 +95,7 @@ export default function Deployments() {
 	}
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			{deployment && project ? (
 				<div className='flex flex-col md:flex-row'>
@@ -201,7 +201,7 @@ export default function Deployments() {
 					<Spinner size={24} />
 				</div>
 			)}
-		</div>
+		</Container>
 	)
 }
 

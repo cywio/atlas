@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useApi, useValidSession } from '@hooks'
-import { Select, Nav, Button, Input, Textarea, Spinner } from '@components'
+import { Select, Nav, Button, Input, Textarea, Spinner, Container } from '@components'
 
 export default function Create() {
 	const [loading, setLoading] = useState(false)
@@ -54,7 +54,7 @@ export default function Create() {
 	}
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='max-w-md m-auto'>
 				<b>Create Project</b>
@@ -154,7 +154,7 @@ export default function Create() {
 					</Button>
 				</div>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

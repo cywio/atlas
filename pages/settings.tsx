@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Input, Button, Nav } from '@components'
+import { Input, Button, Nav, Container } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import toast from 'react-hot-toast'
 import qrcode from 'qrcode'
@@ -96,7 +96,7 @@ export default function Settings({ host }) {
 	}
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active='settings' />
 			<div className='flex'>
 				<main className='bg-white rounded-lg shadow w-full p-10'>
@@ -220,7 +220,7 @@ export default function Settings({ host }) {
 					</div>
 				</main>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

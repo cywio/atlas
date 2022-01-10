@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Nav, Spinner } from '@components'
+import { Nav, Spinner, Container } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import * as timeago from 'timeago.js'
 
@@ -14,7 +14,7 @@ export default function Activity() {
 	}, [])
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active='activity' />
 			{activity ? (
 				<section className='mb-12'>
@@ -47,7 +47,7 @@ export default function Activity() {
 					<Spinner size={24} />
 				</div>
 			)}
-		</div>
+		</Container>
 	)
 }
 

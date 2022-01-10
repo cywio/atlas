@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
 import { Disclosure } from '@headlessui/react'
-import { Button, Nav, Input, Select } from '@components'
+import { Button, Nav, Input, Select, Container } from '@components'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
 import toast from 'react-hot-toast'
@@ -91,7 +91,7 @@ export default function Admin() {
 	}
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='flex'>
 				<main className='bg-white rounded-lg shadow w-full p-10'>
@@ -206,7 +206,7 @@ export default function Admin() {
 					</div>
 				</main>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
-import { Spinner, Nav, Button, Status } from '@components'
+import { Spinner, Nav, Button, Status, Container } from '@components'
 import * as timeago from 'timeago.js'
 import Link from 'next/link'
 
@@ -19,7 +19,7 @@ export default function Home() {
 	}, [])
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active='dashboard' />
 			<section className='mb-12'>
 				<div className='flex items-center justify-between mb-4'>
@@ -127,7 +127,7 @@ export default function Home() {
 					)}
 				</div>
 			</section>
-		</div>
+		</Container>
 	)
 }
 

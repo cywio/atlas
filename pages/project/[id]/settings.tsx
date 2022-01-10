@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Textarea, Input, Button, ProjectSidebar, Nav, Spinner, Select } from '@components'
+import { Textarea, Input, Button, ProjectSidebar, Nav, Spinner, Select, Container } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import toast from 'react-hot-toast'
 
@@ -112,7 +112,7 @@ export default function Project() {
 	}
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='flex flex-col md:flex-row'>
 				<ProjectSidebar id={project.id} active='settings' title={project.name} />
@@ -218,7 +218,7 @@ export default function Project() {
 					</div>
 				</main>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

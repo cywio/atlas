@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
-import { Spinner, Nav, Button, Input, Textarea, Select } from '@components'
+import { Spinner, Nav, Button, Input, Textarea, Select, Container } from '@components'
 import toast from 'react-hot-toast'
 
 export default function Create() {
@@ -52,7 +52,7 @@ export default function Create() {
 	}
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			<div className='max-w-md m-auto'>
 				<b>Create Database</b>
@@ -128,7 +128,7 @@ export default function Create() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</Container>
 	)
 }
 

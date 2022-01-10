@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Spinner, Nav, ProjectSidebar, DeploymentTable, Nothing } from '@components'
+import { Spinner, Nav, ProjectSidebar, DeploymentTable, Nothing, Container } from '@components'
 import { useApi, useValidSession } from '@hooks'
 
 export default function Project() {
@@ -18,7 +18,7 @@ export default function Project() {
 	}, [id])
 
 	return (
-		<div className='max-w-6xl m-auto p-8'>
+		<Container>
 			<Nav active={null} />
 			{project ? (
 				<div className='flex flex-col md:flex-row'>
@@ -40,7 +40,7 @@ export default function Project() {
 					<Spinner size={24} />
 				</div>
 			)}
-		</div>
+		</Container>
 	)
 }
 
