@@ -59,6 +59,16 @@ export default function Deployments() {
 		})
 	}
 
+	async function terminate() {
+		await toast.promise(useApi(`/api/projects/${id}/deployments/${deployId}/terminate`, 'POST'), {
+			loading: 'Terminating task...',
+			success: () => {
+				return 'Build was terminated'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
 	function ansiToHtml(logs) {
 		let convert = new ansi()
 		return convert.ansi_to_html(logs)
@@ -100,6 +110,11 @@ export default function Deployments() {
 											<img src='/icons/rollback.svg' className='w-4' />
 											<span>Rollback</span>
 										</div>
+									</Button>
+								)}
+								{deployment.status === 'BUILDING' && (
+									<Button onClick={() => terminate()} className='text-red-600'>
+										Cancel Build
 									</Button>
 								)}
 							</div>
@@ -145,7 +160,9 @@ export default function Deployments() {
 									<p className='opacity-40'>Build Duration</p>
 									<p className='flex items-center gap-2'>
 										{getBuildDuration()}
-										{deployment.status !== 'COMPLETED' && deployment.status !== 'FAILED' && <Spinner />}
+										{deployment.status !== 'COMPLETED' &&
+											deployment.status !== 'FAILED' &&
+											deployment.status !== 'CANCELED' && <Spinner />}
 									</p>
 								</div>
 							</div>

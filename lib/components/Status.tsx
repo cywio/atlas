@@ -70,6 +70,12 @@ export function Status({ status }) {
 				text: 'Queued',
 				ping: true,
 			})
+		if (status === 'CANCELED')
+			setItem({
+				color: 'gray',
+				text: 'Canceled',
+				ping: false,
+			})
 	}, [status])
 
 	return (
