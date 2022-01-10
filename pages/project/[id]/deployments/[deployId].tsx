@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useInterval, useApi, useValidSession } from '@hooks'
 import { Status, Nav, ProjectSidebar, Spinner, Button } from '@components'
+import { intervalToDuration, formatDuration } from 'date-fns'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
 import toast from 'react-hot-toast'
@@ -27,14 +28,14 @@ export default function Deployments() {
 		async () => {
 			if (id) setLogs(ansiToHtml(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`)))
 		},
-		deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 1000 : null
+		deployment.status === 'INITIALIZING' || deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 1000 : null
 	)
 
 	useInterval(
 		async () => {
 			if (id) setDeployment(await useApi(`/api/projects/${id}/deployments/${deployId}`))
 		},
-		deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 3000 : null
+		deployment.status === 'INITIALIZING' || deployment.status === 'BUILDING' || deployment.status === 'DEPLOYING' ? 3000 : null
 	)
 
 	async function rollback() {
@@ -51,6 +52,16 @@ export default function Deployments() {
 	function ansiToHtml(logs) {
 		let convert = new ansi()
 		return convert.ansi_to_html(logs)
+	}
+
+	function getBuildDuration() {
+		if (deployment.created && deployment.updated)
+			return formatDuration(
+				intervalToDuration({
+					start: new Date(deployment.created),
+					end: new Date(deployment.updated),
+				})
+			)
 	}
 
 	return (
@@ -119,6 +130,13 @@ export default function Deployments() {
 								<div className='grid grid-cols-2'>
 									<p className='opacity-40'>Commit ID</p>
 									<p className='font-mono'>{deployment.commit || <span className='opacity-40'>Unknown</span>}</p>
+								</div>
+								<div className='grid grid-cols-2'>
+									<p className='opacity-40'>Build Duration</p>
+									<p className='flex items-center gap-2'>
+										{getBuildDuration()}
+										{deployment.status !== 'COMPLETED' && deployment.status !== 'FAILED' && <Spinner />}
+									</p>
 								</div>
 							</div>
 						</div>
