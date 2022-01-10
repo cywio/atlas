@@ -1,5 +1,5 @@
 # Build stage
-FROM node:15-alpine AS build
+FROM node:lts-alpine AS build
 WORKDIR /build
 
 # Install modules with dev dependencies
