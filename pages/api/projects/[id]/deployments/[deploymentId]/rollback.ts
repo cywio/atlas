@@ -35,7 +35,7 @@ export default async function (req, res) {
 					branch: rollback.branch,
 					commit: rollback.commit,
 					message: rollback.message,
-					status: 'BUILDING',
+					status: 'INITIALIZING',
 					projects: {
 						connect: {
 							id: project.id,

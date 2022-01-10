@@ -58,6 +58,12 @@ export function Status({ status }) {
 				text: 'Deploying',
 				ping: true,
 			})
+		if (status === 'INITIALIZING')
+			setItem({
+				color: 'royalblue',
+				text: 'Initializing',
+				ping: true,
+			})
 	}, [status])
 
 	return (

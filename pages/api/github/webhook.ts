@@ -44,7 +44,7 @@ export default async function (req, res) {
 						commit,
 						message,
 						type: 'github',
-						status: 'BUILDING',
+						status: 'INITIALIZING',
 						manual: false,
 						projects: {
 							connect: {

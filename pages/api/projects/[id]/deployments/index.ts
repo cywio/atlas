@@ -58,7 +58,7 @@ export default async function (req, res) {
 						type,
 						branch,
 						manual: true,
-						status: 'BUILDING',
+						status: 'INITIALIZING',
 						projects: {
 							connect: {
 								id: project.id,
@@ -111,7 +111,7 @@ export default async function (req, res) {
 						commit,
 						message,
 						type: 'github',
-						status: 'BUILDING',
+						status: 'INITIALIZING',
 						manual: true,
 						projects: {
 							connect: {
