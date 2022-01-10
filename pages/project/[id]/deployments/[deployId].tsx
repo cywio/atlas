@@ -69,6 +69,16 @@ export default function Deployments() {
 		})
 	}
 
+	async function dequeue() {
+		await toast.promise(useApi(`/api/projects/${id}/deployments/${deployId}/dequeue`, 'POST'), {
+			loading: 'Removing from queue...',
+			success: () => {
+				return 'Removed from queue'
+			},
+			error: 'Error, please try again',
+		})
+	}
+
 	function ansiToHtml(logs) {
 		let convert = new ansi()
 		return convert.ansi_to_html(logs)
@@ -114,6 +124,11 @@ export default function Deployments() {
 								)}
 								{deployment.status === 'BUILDING' && (
 									<Button onClick={() => terminate()} className='text-red-600'>
+										Cancel Build
+									</Button>
+								)}
+								{deployment.status === 'QUEUED' && (
+									<Button onClick={() => dequeue()} className='text-red-600'>
 										Cancel Build
 									</Button>
 								)}
