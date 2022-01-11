@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Nav, Spinner, Container } from '@components'
+import { Nav, Spinner, Container, Avatar } from '@components'
 import { useApi, useValidSession } from '@hooks'
 import * as timeago from 'timeago.js'
 
@@ -28,7 +28,7 @@ export default function Activity() {
 							return (
 								<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between'>
 									<div className='flex gap-4 items-center max-w-lg truncate'>
-										<img src={i.accounts.avatar} className='w-10 h-10 rounded-full' />
+										<Avatar name={i.accounts.name} image={i.accounts.avatar} />
 										<span>
 											<p>{i.action}</p>
 											<p className='opacity-40'>

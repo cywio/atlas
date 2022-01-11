@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
 import { Disclosure } from '@headlessui/react'
-import { Button, Nav, Input, Select, Container } from '@components'
+import { Button, Nav, Input, Select, Container, Avatar } from '@components'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
 import toast from 'react-hot-toast'
@@ -156,14 +156,7 @@ export default function Admin() {
 									return (
 										<Disclosure>
 											<Disclosure.Button className='flex items-center gap-4 w-full px-4 py-2 -ml-4 text-sm font-medium text-left rounded-lg'>
-												<div
-													className='bg-gray-200 rounded-full w-10 h-10 border hover:opacity-80'
-													style={{
-														backgroundSize: 'cover',
-														backgroundPosition: 'center',
-														backgroundImage: `url(${i.avatar})`,
-													}}
-												/>
+												<Avatar name={i.name} image={i.avatar} />
 												{i.name} <span className='opacity-40'>{i.email}</span>{' '}
 												{i.admin && <span className='bg-gray-200 rounded-full py-1 px-2 text-xs'>Admin</span>}
 											</Disclosure.Button>

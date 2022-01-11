@@ -1,5 +1,5 @@
 import { useApi, useInterval } from '@hooks'
-import { Dropdown } from '@components'
+import { Dropdown, Avatar } from '@components'
 import { useEffect, useState } from 'react'
 
 export function Nav({ active }) {
@@ -64,14 +64,7 @@ export function Nav({ active }) {
 						{ text: 'Logout', action: { href: '/logout' } },
 					]}
 				>
-					<div
-						className='bg-gray-200 rounded-full w-10 h-10 border hover:opacity-80'
-						style={{
-							backgroundSize: 'cover',
-							backgroundPosition: 'center',
-							backgroundImage: `url(${user && user.avatar})`,
-						}}
-					/>
+					<Avatar name={user && user.name} image={user && user.avatar} />
 				</Dropdown>
 			</nav>
 		</>
