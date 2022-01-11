@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApi, useValidSession } from '@hooks'
-import { Spinner, Nav, Button, Status, Container } from '@components'
+import { Spinner, Nav, Button, Status, Container, Avatar } from '@components'
 import * as timeago from 'timeago.js'
 import Link from 'next/link'
 
@@ -8,9 +8,11 @@ export default function Home() {
 	const [projects, setProjects] = useState(null)
 	const [databases, setDatabases] = useState(null)
 	const [activity, setActivity] = useState(null)
+	const [activeBuilds, setActiveBuilds] = useState(null)
 
 	useEffect(() => {
 		const hydrate = async () => {
+			setActiveBuilds(await useApi('/api/builds'))
 			setProjects(await useApi('/api/projects'))
 			setDatabases(await useApi('/api/databases'))
 			setActivity(await useApi('/api/activity?take=7'))
@@ -21,6 +23,40 @@ export default function Home() {
 	return (
 		<Container>
 			<Nav active='dashboard' />
+			{activeBuilds && activeBuilds.length ? (
+				<section className='mb-12'>
+					<div className='flex items-center justify-between mb-4'>
+						<h1>
+							Active Builds <span className='opacity-40 ml-1'>{activeBuilds && activeBuilds.length}</span>
+						</h1>
+					</div>
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+						{activeBuilds ? (
+							activeBuilds.map((i) => {
+								return (
+									<Link href={`/project/${i.project}/deployments/${i.id}`} passHref>
+										<a className='flex justify-between gap-4 bg-white py-3.5 px-5 border rounded-lg items-center hover:bg-gray-50 hover:border-gray-300 hover:cursor-pointer transition'>
+											<div className='flex flex-col gap-1'>
+												<b>{i.message || i.projects.name}</b>
+												<div className='flex opacity-40 items-center'>
+													<img src={`/icons/${i.type}.svg`} className='w-4 mr-3' />
+													<p>
+														<b>{i.projects.name}</b> — {i.branch}{' '}
+														<span className='truncate'>{i.commit && `(${i.commit.slice(0, 8)})`}</span>
+													</p>
+												</div>
+											</div>
+											<Status status={i.status} />
+										</a>
+									</Link>
+								)
+							})
+						) : (
+							<Spinner size={24} />
+						)}
+					</div>
+				</section>
+			) : null}
 			<section className='mb-12'>
 				<div className='flex items-center justify-between mb-4'>
 					<h1>
@@ -110,7 +146,7 @@ export default function Home() {
 							return (
 								<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-center justify-between'>
 									<div className='flex gap-4 items-center max-w-lg truncate'>
-										<img src={i.accounts.avatar} className='w-10 h-10 rounded-full' />
+										<Avatar name={i.accounts.name} image={i.accounts.avatar} />
 										<span>
 											<p>{i.action}</p>
 											<p className='opacity-40'>
