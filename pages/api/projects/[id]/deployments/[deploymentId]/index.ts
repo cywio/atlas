@@ -32,6 +32,17 @@ export default async function (req, res) {
 			delete deployment.accounts.otp_secret
 			delete deployment.logs
 			res.json(deployment)
+		} else if (req.method === 'DELETE') {
+			let latestDeployment = await prisma.deployments.findFirst({
+				where: { project: deployment.project },
+				orderBy: { created: 'desc' },
+			})
+
+			if (latestDeployment.id === deployment.id) return res.status(409).send('Cannot delete production deployment')
+
+			await prisma.deployments.delete({ where: { id: deployment.id } })
+
+			res.status(204).end()
 		} else {
 			res.status(405).send()
 		}

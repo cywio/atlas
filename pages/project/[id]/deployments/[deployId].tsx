@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useInterval, useApi, useValidSession } from '@hooks'
-import { Status, Nav, ProjectSidebar, Spinner, Button, Container } from '@components'
+import { Status, Nav, ProjectSidebar, Spinner, Button, Container, Dropdown } from '@components'
 import { intervalToDuration, formatDuration } from 'date-fns'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
@@ -79,6 +79,17 @@ export default function Deployments() {
 		})
 	}
 
+	async function deleteDeployment() {
+		await toast.promise(useApi(`/api/projects/${id}/deployments/${deployId}`, 'DELETE'), {
+			loading: 'Deleteing...',
+			success: () => {
+				window.location.href = `/project/${deployment.project}/deployments`
+				return 'Deployment successfully deleted'
+			},
+			error: (e) => e.response.data,
+		})
+	}
+
 	function ansiToHtml(logs) {
 		let convert = new ansi()
 		return convert.ansi_to_html(logs)
@@ -114,24 +125,47 @@ export default function Deployments() {
 										{deployment.manual && ' (Manual)'} {timeago.format(deployment.created)}
 									</p>
 								</span>
-								{deployment.status === 'COMPLETED' && (
-									<Button onClick={() => rollback()}>
-										<div className='flex gap-1.5'>
-											<img src='/icons/rollback.svg' className='w-4' />
-											<span>Rollback</span>
+								<div className='flex items-center gap-2'>
+									{deployment.status === 'COMPLETED' && (
+										<Button onClick={() => rollback()}>
+											<div className='flex gap-1.5'>
+												<img src='/icons/rollback.svg' className='w-4' />
+												<span>Rollback</span>
+											</div>
+										</Button>
+									)}
+									{deployment.status === 'BUILDING' && (
+										<Button onClick={() => terminate()} className='text-red-600'>
+											Cancel Build
+										</Button>
+									)}
+									{deployment.status === 'QUEUED' && (
+										<Button onClick={() => dequeue()} className='text-red-600'>
+											Cancel Build
+										</Button>
+									)}
+									<Dropdown
+										items={[
+											{
+												text: 'Download Logs',
+												action: {
+													href: 'data:text/plain;charset=utf-8,' + encodeURIComponent(logs),
+													download: true,
+												},
+											},
+											{
+												text: 'View Source',
+												action: { href: deployment.origin, target: '_blank', rel: 'noreferrer' },
+												seperate: true,
+											},
+											{ text: 'Delete Deployment', action: { onClick: () => deleteDeployment() } },
+										]}
+									>
+										<div className='mt-3 flex gap-1.5 w-5 items-center h-9 opacity-40 hover:opacity-70'>
+											<img src='/icons/dots.svg' />
 										</div>
-									</Button>
-								)}
-								{deployment.status === 'BUILDING' && (
-									<Button onClick={() => terminate()} className='text-red-600'>
-										Cancel Build
-									</Button>
-								)}
-								{deployment.status === 'QUEUED' && (
-									<Button onClick={() => dequeue()} className='text-red-600'>
-										Cancel Build
-									</Button>
-								)}
+									</Dropdown>
+								</div>
 							</div>
 						</div>
 						<div className='mb-8'>
