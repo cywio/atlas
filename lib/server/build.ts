@@ -1,4 +1,4 @@
-import { buildQueue } from 'lib/server/queues'
+import { buildQueue, buildLogsQueue } from 'lib/server/queues'
 import ssh from 'lib/server/ssh'
 import prisma from 'lib/server/db'
 
@@ -13,7 +13,6 @@ export async function builder(payload) {
 		/**
 		 * @BUG Possible bug with SSH client, appends extra ' when it detects ://,
 		 * leads to failing Dokku builds
-		 * @TODO All logs don't get inserted into DB
 		 */
 
 		await ssh('dokku', ['git:unlock', projectId])
@@ -22,19 +21,11 @@ export async function builder(payload) {
 		let client: any = await ssh('dokku', [], true)
 		await client
 			.exec(`git:sync ${projectId} ${origin}`, [branch, '--build'], {
-				onStdout: async (chunk) => {
-					await appendToLogs(deploymentId, projectId, chunk)
-				},
-				onStderr: async (chunk) => {
-					await appendToLogs(deploymentId, projectId, chunk)
-				},
+				onStdout: async (chunk) => await buildLogsQueue.push({ deploymentId, projectId, chunk, type: 'stdout' }),
+				onStderr: async (chunk) => await buildLogsQueue.push({ deploymentId, projectId, chunk, type: 'stderr' }),
 			})
-			.then(async () => {
-				await updateCompleteStatus(deploymentId)
-			})
-			.catch(async () => {
-				await updateCompleteStatus(deploymentId)
-			})
+			.then(async () => await updateCompleteStatus(deploymentId))
+			.catch(async () => await updateCompleteStatus(deploymentId))
 
 		await ssh('dokku', ['cleanup'])
 	} catch (e) {
@@ -42,7 +33,7 @@ export async function builder(payload) {
 	}
 }
 
-async function appendToLogs(deploymentId, projectId, chunk) {
+export async function appendToLogs({ deploymentId, projectId, chunk, type }) {
 	let { logs } = await prisma.deployments.findUnique({
 		where: { id: deploymentId },
 		select: { logs: true },
@@ -50,10 +41,21 @@ async function appendToLogs(deploymentId, projectId, chunk) {
 	await prisma.deployments.update({
 		where: { id: deploymentId },
 		data: {
-			logs: `${logs != null ? `${logs}\n` : ''}${chunk.toString('utf8')}`,
+			logs: formatLogs(logs, chunk, type),
 			status: getStatusViaLogs(logs, projectId),
 		},
 	})
+}
+
+function formatLogs(logs, chunk, type) {
+	let prevLineExists = logs !== null && logs !== ''
+	let text = chunk
+		.toString('utf8')
+		.split('\n')
+		.filter((i) => i !== '')
+	let timestamp = String(new Date().getTime())
+	let formated = text.map((i) => `${type}:${timestamp}:${i}`)
+	return `${prevLineExists ? `${logs}\n` : ''}${formated.join('\n')}`
 }
 
 function getStatusViaLogs(logs, projectId) {
