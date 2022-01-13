@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useInterval, useApi, useValidSession } from '@hooks'
 import { Status, Nav, ProjectSidebar, Spinner, Button, Container, Dropdown } from '@components'
-import { intervalToDuration, formatDuration } from 'date-fns'
+import { intervalToDuration, formatDuration, formatISO9075 } from 'date-fns'
 import { useRouter } from 'next/router'
 import * as timeago from 'timeago.js'
 import toast from 'react-hot-toast'
+import css from 'classnames'
 import ansi from 'ansi_up'
 
 export default function Deployments() {
@@ -19,14 +20,14 @@ export default function Deployments() {
 		const hydrate = async () => {
 			if (id) setProject(await useApi(`/api/projects/${id}`))
 			if (id) setDeployment(await useApi(`/api/projects/${id}/deployments/${deployId}`))
-			if (id) setLogs(ansiToHtml(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`)))
+			if (id) setLogs(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`))
 		}
 		hydrate()
 	}, [id, deployId])
 
 	useInterval(
 		async () => {
-			if (id) setLogs(ansiToHtml(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`)))
+			if (id) setLogs(await useApi(`/api/projects/${id}/deployments/${deployId}/logs`))
 		},
 		deployment.status === 'QUEUED' ||
 			deployment.status === 'INITIALIZING' ||
@@ -90,9 +91,55 @@ export default function Deployments() {
 		})
 	}
 
-	function ansiToHtml(logs) {
+	function parseToHtml(logs) {
 		let convert = new ansi()
-		return convert.ansi_to_html(logs)
+		logs = convert.ansi_to_html(logs)
+
+		logs = logs.replace(
+			/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi,
+			(url) => `<a href="${url}" target="_blank" rel="noopener noreferrer" class="hover:underline">${url}</a>`
+		)
+
+		logs = logs
+			.split('\n')
+			.map((i) => i.split(':'))
+			.map((i) => ({
+				type: i.shift(),
+				time: i.shift(),
+				text: i.join(':'),
+			}))
+
+		return flattenLogs(logs)
+	}
+
+	function flattenLogs(logs) {
+		/**
+		 * Flatten the logs by checking if the next value is identical to the current, if it is
+		 * combine into the same line instead of breaking a new line for each item
+		 */
+
+		let _logs = []
+		let condensable = []
+
+		for (let i = 0; i < logs.length - 1; i++) {
+			let current = String(logs[i].text).trim()
+			let next = String(logs[i + 1].text).trim()
+
+			if (current === '') continue
+			else if (current == next) condensable.push(`${current}${next}`)
+			else {
+				if (condensable.length > 0) {
+					_logs.push({
+						type: logs[i].type,
+						time: logs[i].time,
+						text: condensable.join(''),
+					})
+					condensable = []
+				} else _logs.push(logs[i])
+			}
+		}
+
+		return _logs
 	}
 
 	function getBuildDuration() {
@@ -103,6 +150,14 @@ export default function Deployments() {
 					end: new Date(deployment.updated),
 				})
 			)
+	}
+
+	function isWarningLine(text) {
+		return /warn/.test(text)
+	}
+
+	function isErrorLine(type, text) {
+		return type === 'stderr' && (/erorr/.test(text) || /exit/.test(text))
 	}
 
 	return (
@@ -220,11 +275,49 @@ export default function Deployments() {
 							<div className='mb-4'>
 								<b>Build Log</b>
 							</div>
-							<div className='flex gap-4 bg-white py-3.5 px-5 border rounded-lg items-start justify-between mb-3'>
+							<div className='flex gap-4 py-3.5 bg-white border rounded-lg items-start justify-between mb-3 overflow-auto'>
 								{logs ? (
-									<div className='font-mono whitespace-pre-wrap text-sm' dangerouslySetInnerHTML={{ __html: logs }} />
+									<div className='flex flex-col w-full'>
+										{parseToHtml(logs).map(
+											({ type, time, text }) =>
+												text && (
+													<div
+														key={text}
+														className={css(
+															'relative group py-1 px-5 font-mono overflow-auto whitespace-pre-wrap truncate text-sm bg-opacity-40 hover:bg-opacity-50 w-full flex items-start',
+															{
+																'bg-yellow-300': isWarningLine(text),
+																'bg-red-400': isErrorLine(type, text),
+																'hover:bg-gray-100': !isErrorLine(type, text) && !isWarningLine(text),
+															}
+														)}
+													>
+														<span className='opacity-40 min-w-max mr-4'>
+															{time && formatISO9075(new Date(+time || 0), { representation: 'time' })}
+														</span>
+														<div className='w-full'>
+															<code
+																className='whitespace-pre-wrap'
+																dangerouslySetInnerHTML={{ __html: text }}
+															/>
+															<code
+																className={css(
+																	'absolute top-1 right-5 text-xs px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 text-white',
+																	{
+																		'bg-red-500': /stderr/.test(type),
+																		'bg-black': !/stderr/.test(type),
+																	}
+																)}
+															>
+																{type}
+															</code>
+														</div>
+													</div>
+												)
+										)}
+									</div>
 								) : (
-									<span className='opacity-40'>Your build logs will appear here soon...</span>
+									<span className='font-mono text-sm px-5 opacity-40'>Your build logs will appear here soon...</span>
 								)}
 							</div>
 						</div>
