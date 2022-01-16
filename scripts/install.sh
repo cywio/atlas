@@ -7,32 +7,31 @@ SETUP_KEY=$(openssl rand -hex 16)
 DOCKER_USER="a$(openssl rand -hex 8)"
 REPO_URL=$1
 
-#Check if source repo argument exists
+# Check if source repo argument exists
 if ! [ -n "$REPO_URL" ]; then
   echo "!!!!!! Please provide the source repo URL."
   exit 1
 fi
 
-#Check if dokku exists and is root user
+# Check if dokku exists and is root user
 if ! which dokku >/dev/null ; then
     if [ $CURRENT_USER = "root" ] ; then
         echo "-----> Server IP: ${HOST_IP}"
         echo "-----> Current User: ${CURRENT_USER}"
         echo "-----> Latest Dokku Version: ${CURRENT_VERSION}"
+
+        # Install Dokku
+        echo '-----> Installing Dokku'
+        wget https://raw.githubusercontent.com/dokku/dokku/$CURRENT_VERSION/bootstrap.sh
+        sudo DOKKU_TAG=$CURRENT_VERSION bash bootstrap.sh
+        cat ~/.ssh/authorized_keys | dokku ssh-keys:add admin
     else
         echo '!!!!!! You must run this as root'
         exit 1
     fi
 else
-    echo '!!!!!! You have Dokku installed already, skipping installation...'
-    exit 1
+    echo '-----> You have Dokku installed already, skipping installation...'
 fi
-
-# Install Dokku
-echo '-----> Installing Dokku'
-wget https://raw.githubusercontent.com/dokku/dokku/$CURRENT_VERSION/bootstrap.sh
-sudo DOKKU_TAG=$CURRENT_VERSION bash bootstrap.sh
-cat ~/.ssh/authorized_keys | dokku ssh-keys:add admin
 
 # Install database and extra plugins
 echo '-----> Installing plugins'
