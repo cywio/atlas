@@ -1,7 +1,8 @@
+import { decrypt } from '@server/crypto'
+import getSession from '@server/session'
+import prisma from '@server/db'
 import ssh from '@server/ssh'
 import log from '@server/log'
-import prisma from '@server/db'
-import getSession from '@server/session'
 
 export default async function (req, res) {
 	try {
@@ -25,6 +26,7 @@ export default async function (req, res) {
 		if (!envVar) return res.status(404).send()
 
 		if (req.method === 'GET') {
+			envVar.value = decrypt(envVar.value)
 			res.json(envVar)
 		} else if (req.method === 'DELETE') {
 			res.status(202).send()
