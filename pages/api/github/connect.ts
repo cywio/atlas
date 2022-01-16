@@ -1,6 +1,6 @@
-import ssh from '@server/ssh'
+import { encrypt } from '@server/crypto'
 import prisma from '@server/db'
-import getSession from '@server/session'
+import ssh from '@server/ssh'
 import axios from 'axios'
 
 export default async function (req, res) {
@@ -74,10 +74,12 @@ export default async function (req, res) {
 					},
 					data: {
 						tokens: {
-							github: {
-								...data,
-								granted: Date.now(),
-							},
+							github: encrypt(
+								JSON.stringify({
+									...data,
+									granted: Date.now(),
+								})
+							),
 						},
 					},
 				})

@@ -1,9 +1,12 @@
+import { encrypt, decrypt } from '@server/crypto'
+import prisma from '@server/db'
 import axios from 'axios'
-import prisma from './db'
 
 export default async function (req, res, accountId) {
 	try {
 		let account = await prisma.accounts.findUnique({ where: { id: accountId } })
+
+		account.tokens['github'] = JSON.parse(decrypt(account.tokens['github']))
 
 		if (Date.now() < (account.tokens as any).github.granted + (account.tokens as any).github.expires_in * 1000)
 			return (account.tokens as any).github
@@ -29,10 +32,12 @@ export default async function (req, res, accountId) {
 		await prisma.accounts.update({
 			data: {
 				tokens: {
-					github: {
-						...credentials,
-						granted: Date.now(),
-					},
+					github: encrypt(
+						JSON.stringify({
+							...credentials,
+							granted: Date.now(),
+						})
+					),
 				},
 			},
 			where: {
