@@ -3,9 +3,9 @@ export function Spinner({ size = 15 }) {
 		<svg width={size} height={size} viewBox={`0 0 40 40`} xmlns='http://www.w3.org/2000/svg'>
 			<defs>
 				<linearGradient id='a'>
-					<stop stop-color='#777' stop-opacity='0' offset='0%' />
-					<stop stop-color='#777' stop-opacity='.5' offset='50%' />
-					<stop stop-color='#777' offset='100%' />
+					<stop stop-color='#aaa' stop-opacity='0' offset='0%' />
+					<stop stop-color='#aaa' stop-opacity='.5' offset='50%' />
+					<stop stop-color='#aaa' offset='100%' />
 				</linearGradient>
 			</defs>
 			<g fill='none' fill-rule='evenodd'>
