@@ -13,18 +13,26 @@ if ! [ -n "$REPO_URL" ]; then
   exit 1
 fi
 
+echo "-----> Server IP: ${HOST_IP}"
+echo "-----> Current User: ${CURRENT_USER}"
+echo "-----> Latest Dokku Version: ${CURRENT_VERSION}"
+
 # Check if dokku exists and is root user
 if ! which dokku >/dev/null ; then
     if [ $CURRENT_USER = "root" ] ; then
-        echo "-----> Server IP: ${HOST_IP}"
-        echo "-----> Current User: ${CURRENT_USER}"
-        echo "-----> Latest Dokku Version: ${CURRENT_VERSION}"
-
         # Install Dokku
         echo '-----> Installing Dokku'
         wget https://raw.githubusercontent.com/dokku/dokku/$CURRENT_VERSION/bootstrap.sh
         sudo DOKKU_TAG=$CURRENT_VERSION bash bootstrap.sh
         cat ~/.ssh/authorized_keys | dokku ssh-keys:add admin
+
+        # Verify dokku was installed correctly
+        if which dokku >/dev/null ; then
+            echo "-----> Dokku installed successfully"
+        else
+            echo "!!!!!! Something went wrong with the Dokku installation, please review any errors and try again."
+            exit 1
+        fi
     else
         echo '!!!!!! You must run this as root'
         exit 1
