@@ -49,12 +49,19 @@ export async function appendToLogs({ deploymentId, projectId, chunk, type }) {
 
 function formatLogs(logs, chunk, type) {
 	let prevLineExists = logs !== null && logs !== ''
+
+	/**
+	 * Remove all GitHub tokens
+	 */
+	logs = String(logs).replace(new RegExp(/(gh.?_.*)@/, 'g'), '')
+
 	let text = chunk
 		.toString('utf8')
 		.split('\n')
 		.filter((i) => i !== '')
 	let timestamp = String(new Date().getTime())
 	let formated = text.map((i) => `${type}:${timestamp}:${i}`)
+
 	return `${prevLineExists ? `${logs}\n` : ''}${formated.join('\n')}`
 }
 
